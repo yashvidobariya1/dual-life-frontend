@@ -1,0 +1,13 @@
+.user-details {
+  width: 50%;
+}
+
+.card-detialls {
+  display: flex;
+  gap: 20px;
+}
+
+.download-btn h6 {
+  margin: 0px;
+  font-size: 17px;
+}

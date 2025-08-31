@@ -1,0 +1,98 @@
+.auth-container {
+  width: 100%;
+  max-width: 500px;
+  padding: 40px;
+}
+
+.login-main-div {
+  display: flex;
+  flex: 1 1;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+}
+
+.login-main-div img {
+  width: 70%;
+  height: 100vh;
+}
+
+.auth-box {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.auth-box h2 {
+  text-align: left;
+  margin-bottom: 20px;
+  color: rgb(9, 9, 164);
+  font-size: 40px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #555;
+}
+
+.input-group input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+}
+
+.input-group input:focus {
+  border-color: #4a90e2;
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: #4a90e2;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s ease;
+}
+
+.auth-btn:hover {
+  background: #357ab7;
+}
+
+.toggle-text {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+.toggle-text span {
+  color: #4a90e2;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 600px) {
+  .auth-box {
+    padding: 20px;
+  }
+
+  .auth-btn {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
