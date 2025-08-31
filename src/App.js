@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  matchPath,
+} from "react-router-dom";
 
 import "./App.css";
 import Sidebar from "./Main/SideBar";
@@ -12,6 +18,7 @@ import Report from "./Screen/Report";
 import ReportDetails from "./Screen/ReportDetails";
 import Login from "./Screen/Login";
 import AdharVerfiy from "./User/AdharVerfiy";
+import UserDashboard from "./User/UserDashboard";
 
 function Layout({
   children,
@@ -24,7 +31,9 @@ function Layout({
   const location = useLocation();
 
   const isLoginOrAdharPage =
-    location.pathname === "/" || location.pathname === "/useradharverfiy";
+    location.pathname === "/" ||
+    location.pathname === "/useradharverfiy" ||
+    matchPath("/userdashboard/:id", location.pathname);
 
   if (isLoginOrAdharPage) {
     return children;
@@ -87,6 +96,7 @@ function App() {
           />
           <Route path="/reports" element={<Report />} />
           <Route path="/reports/reportdetails" element={<ReportDetails />} />
+          <Route path="/userdashboard/:id" element={<UserDashboard />} />
         </Routes>
       </Layout>
     </BrowserRouter>

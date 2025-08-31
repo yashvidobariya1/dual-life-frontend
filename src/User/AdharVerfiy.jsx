@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./AdharVerfiy.css";
+import { useNavigate } from "react-router-dom";
 
 const AdharVerfiy = () => {
   const [aadhaar, setAadhaar] = useState("");
@@ -8,7 +9,7 @@ const AdharVerfiy = () => {
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [otp, setOtp] = useState("");
   const [refId, setrefId] = useState("");
-  const [userData, setUserData] = useState(null);
+  const navigate = useNavigate();
 
   const handleAadhaarChange = (e) => {
     let value = e.target.value.replace(/\D/g, "");
@@ -39,7 +40,7 @@ const AdharVerfiy = () => {
       const data = await res.json();
 
       if (res.ok) {
-        setrefId(data.refId); // assuming API returns refId
+        setrefId(data.refId);
         setShowOtpPopup(true);
       } else {
         alert(data.message || "Failed to generate OTP");
@@ -57,10 +58,7 @@ const AdharVerfiy = () => {
       alert("Please enter a valid 6-digit OTP");
       return;
     }
-
     setLoading(true);
-    setShowOtpPopup(false);
-
     try {
       const res = await fetch(
         "https://duallife-backend.vercel.app/verification/verify-otp",
@@ -72,13 +70,10 @@ const AdharVerfiy = () => {
           body: JSON.stringify({ refId, otp, aadhaarNumber: aadhaar }),
         }
       );
-
       const data = await res.json();
 
       if (res.ok) {
-        setUserData(res.kycData);
-        console.log("kyc data", userData);
-        setShowResults(true);
+        navigate(`/userdashboard/${aadhaar}`);
       } else {
         alert(data.message || "OTP verification failed");
       }
@@ -103,7 +98,6 @@ const AdharVerfiy = () => {
           </p>
         </header>
 
-        {/* Aadhaar Section */}
         {!showResults && (
           <div className="card-adhar">
             <h2>Enter Aadhaar Details</h2>
@@ -151,65 +145,6 @@ const AdharVerfiy = () => {
           </div>
         )}
 
-        {/* Results Section */}
-        {showResults && userData && (
-          <div className="results">
-            {/* User Info */}
-            <div className="card-adhar user-card-adhar">
-              <img src={userData.photo} alt="User" className="user-photo" />
-              <div>
-                <h2>{userData.name}</h2>
-                <p>{userData.address}</p>
-                <span className={`status-badge ${userData.statusClass}`}>
-                  {userData.status}
-                </span>
-              </div>
-              <button className="download-btn">
-                <i className="fas fa-file-pdf"></i> Download Health card-adhar
-              </button>
-            </div>
-
-            {/* Test Results */}
-            <div className="card-adhar">
-              <h2>
-                <i className="fas fa-flask"></i> Latest Test Results
-              </h2>
-              {userData?.tests?.map((t, i) => (
-                <div key={i} className="test-item">
-                  <div>
-                    <h3>{t.name}</h3>
-                    <p>
-                      Normal range: {t.normalRange} {t.unit}
-                    </p>
-                  </div>
-                  <div>
-                    <strong>
-                      {t.value} {t.unit}
-                    </strong>
-                    <p className={t.statusClass}>{t.status}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Device Images */}
-            <div className="card-adhar">
-              <h2>
-                <i className="fas fa-camera"></i> Test Device Images
-              </h2>
-              <div className="image-grid">
-                {userData.deviceImages.map((img, i) => (
-                  <div key={i} className="image-card-adhar">
-                    <img src={img.url} alt={img.caption} />
-                    <p>{img.caption}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Footer */}
         <footer className="portal-footer">
           <p>
             © 2023 Dual Life Science Healthcare Platform. All rights reserved.

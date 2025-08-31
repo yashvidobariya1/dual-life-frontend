@@ -1,0 +1,8 @@
+.user-details {
+  width: 50%;
+}
+
+.card-detialls {
+  display: flex;
+  gap: 20px;
+}

@@ -34,6 +34,7 @@
 
 .card-adhar p {
   margin: 12px 0 !important;
+  margin: 0px !important;
 }
 
 .card-adhar {
@@ -160,6 +161,10 @@
   border-radius: 8px;
   border: none;
   color: white;
+  display: flex;
+  gap: 10px;
+  display: flex;
+  align-items: center;
 }
 .download-btn:hover {
   background: #15803d !important;
