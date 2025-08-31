@@ -1,0 +1,114 @@
+.subadmin-container {
+  padding: 30px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937; /* gray-900 */
+}
+
+.add-btn {
+  background-color: #2563eb; /* blue-600 */
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.add-btn:hover {
+  background-color: #1d4ed8; /* blue-700 */
+}
+
+.list-container {
+  margin-top: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.list-item {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb; /* divide-gray-200 */
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: #2563eb;
+  margin: 0px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  transition: 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.edit-btn {
+  background: #dbeafe; /* blue-100 */
+  color: #1e40af; /* blue-800 */
+}
+.edit-btn:hover {
+  background: #bfdbfe; /* blue-200 */
+}
+
+.deactivate-btn {
+  background: #fee2e2; /* red-100 */
+  color: #991b1b; /* red-800 */
+}
+.deactivate-btn:hover {
+  background: #fecaca; /* red-200 */
+}
+
+.list-body {
+  /* margin-top: 10px; */
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-size: 14px;
+  color: #6b7280; /* gray-500 */
+}
+
+.phone {
+  display: flex;
+  align-items: center;
+  margin: 0px;
+  gap: 6px;
+  color: black;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* margin-top: 10px; */
+  color: rgb(59, 59, 59);
+}
