@@ -121,7 +121,6 @@ const Dashboard = () => {
               <span className="aadhaar-details">
                 Aadhaar: <b>{rec.aadhaar}</b>
               </span>
-              <span className={`status ${rec.statusClass}`}>{rec.status}</span>
             </div>
             <div className="record-footer">
               <span>

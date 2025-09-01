@@ -4,7 +4,6 @@ import {
   Routes,
   Route,
   useLocation,
-  matchPath,
 } from "react-router-dom";
 
 import "./App.css";
@@ -19,6 +18,8 @@ import ReportDetails from "./Screen/ReportDetails";
 import Login from "./Screen/Login";
 import AdharVerfiy from "./User/AdharVerfiy";
 import UserDashboard from "./User/UserDashboard";
+import ProtectedRoute from "./Main/ProtectedRoute";
+import PublicRoute from "./Main/PublicRoute";
 
 function Layout({
   children,
@@ -30,12 +31,15 @@ function Layout({
 }) {
   const location = useLocation();
 
-  const isLoginOrAdharPage =
-    location.pathname === "/" ||
-    location.pathname === "/useradharverfiy" ||
-    matchPath("/userdashboard/:id", location.pathname);
+  // pages where sidebar & header should NOT show
+  const hideLayoutPaths = ["/login", "/"];
+  // special handling for dynamic route (/userdashboard/:id)
+  const isUserDashboardPage = location.pathname.startsWith("/userdashboard/");
 
-  if (isLoginOrAdharPage) {
+  const shouldHideLayout =
+    hideLayoutPaths.includes(location.pathname) || isUserDashboardPage;
+
+  if (shouldHideLayout) {
     return children;
   }
 
@@ -85,18 +89,81 @@ function App() {
         setSidebarOpen={setSidebarOpen}
       >
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/useradharverfiy" element={<AdharVerfiy />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/sub-admins" element={<SubAdmin />} />
-          <Route path="/test-records" element={<TestRecord />} />
+          {/* Public Routes (blocked if logged in) */}
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <PublicRoute>
+                <AdharVerfiy />
+              </PublicRoute>
+            }
+          />
+
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sub-admins"
+            element={
+              <ProtectedRoute>
+                <SubAdmin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/test-records"
+            element={
+              <ProtectedRoute>
+                <TestRecord />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/test-records/recorddetails"
-            element={<RecordDetails />}
+            element={
+              <ProtectedRoute>
+                <RecordDetails />
+              </ProtectedRoute>
+            }
           />
-          <Route path="/reports" element={<Report />} />
-          <Route path="/reports/reportdetails" element={<ReportDetails />} />
-          <Route path="/userdashboard/:id" element={<UserDashboard />} />
+          <Route
+            path="/reports"
+            element={
+              <ProtectedRoute>
+                <Report />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/reportdetails"
+            element={
+              <ProtectedRoute>
+                <ReportDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/userdashboard/:id"
+            element={
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Layout>
     </BrowserRouter>

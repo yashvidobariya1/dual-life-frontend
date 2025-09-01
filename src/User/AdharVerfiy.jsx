@@ -73,6 +73,7 @@ const AdharVerfiy = () => {
       const data = await res.json();
 
       if (res.ok) {
+        localStorage.setItem("token", JSON.stringify(res.token));
         navigate(`/userdashboard/${aadhaar}`);
       } else {
         alert(data.message || "OTP verification failed");

@@ -10,8 +10,10 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Sidebar = ({ collapsed, mobileOpen, closeSidebar }) => {
+  const user = useSelector((state) => state.auth.userInfo);
   return (
     <div
       className={`sidebar ${collapsed ? "collapsed" : ""} ${
@@ -116,8 +118,8 @@ const Sidebar = ({ collapsed, mobileOpen, closeSidebar }) => {
       <div className="admin-profile">
         <img src={img1} alt="Admin" />
         <div>
-          <p className="name">Admin User</p>
-          <p className="email">admin@duallife.org</p>
+          <p className="name">{user?.name}</p>
+          {/* <p className="email">admin@duallife.org</p> */}
         </div>
       </div>
     </div>

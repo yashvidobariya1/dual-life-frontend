@@ -1,11 +1,18 @@
-import React from "react";
-import { FaBell } from "react-icons/fa";
+import React, { useState, useRef, useEffect } from "react";
 import { IoMdMenu } from "react-icons/io";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./Header.css";
+import { useSelector, useDispatch } from "react-redux";
+import { clearUserInfo } from "../Store/authSlice";
 
 const Header = ({ toggleSidebar }) => {
   const location = useLocation();
+  // const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.userInfo);
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const routeTitles = {
     "/": "Dashboard",
@@ -17,7 +24,25 @@ const Header = ({ toggleSidebar }) => {
     "/reports/reportdetails": "Reports / Report Details",
   };
 
-  const title = routeTitles[location.pathname] || "My App";
+  const title = routeTitles[location.pathname] || "Unknown";
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    dispatch(clearUserInfo());
+    window.location.href = "/";
+  };
 
   return (
     <header className="header">
@@ -31,14 +56,24 @@ const Header = ({ toggleSidebar }) => {
         </div>
       </div>
 
-      <div className="header-right">
-        <div className="notification">
-          <FaBell />
-          <span className="badge">3</span>
-        </div>
-        <div className="profile">
-          <img src="https://via.placeholder.com/40" alt="User" />
-          <span className="username">John Doe</span>
+      <div className="header-right" ref={dropdownRef}>
+        <div
+          className="profile"
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          style={{ cursor: "pointer", position: "relative" }}
+        >
+          <img
+            src="https://via.placeholder.com/40"
+            alt="User"
+            style={{ borderRadius: "50%" }}
+          />
+          <span className="username">{user?.name}</span>
+
+          {dropdownOpen && (
+            <div className="dropdown-menu">
+              <button onClick={handleLogout}>Logout</button>
+            </div>
+          )}
         </div>
       </div>
     </header>

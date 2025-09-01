@@ -2,20 +2,26 @@ import React, { useState } from "react";
 import "./Login.css";
 import img1 from "../Images/bg.jpg";
 import { PostCall } from "../Screen/ApiService";
+import { useNavigate } from "react-router-dom";
+import { loginSuccess } from "../Store/authSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const Navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     fullName: "",
     adhar: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
   });
 
-  const handleToggle = () => {
-    setIsLogin(!isLogin);
-  };
+  // const handleToggle = () => {
+  //   setIsLogin(!isLogin);
+  // };
 
   const handleChange = (e) => {
     setFormData({
@@ -26,25 +32,20 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       if (isLogin) {
-        // Login API call
-        const res = await PostCall("login", {
+        const res = await PostCall("auth/login", {
           userId: formData.email,
           password: formData.password,
         });
-        console.log("Login Success:", res);
-      } else {
-        // Signup API call
-        const res = await PostCall("signup", {
-          fullName: formData.fullName,
-          adhar: formData.adhar,
-          email: formData.email,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-        });
-        console.log("Signup Success:", res);
+        localStorage.setItem("token", JSON.stringify(res.token));
+        dispatch(
+          loginSuccess({
+            user: res.user,
+            token: res.token,
+          })
+        );
+        Navigate("/dashboard");
       }
     } catch (err) {
       console.error("API Error:", err);
@@ -56,9 +57,10 @@ const Login = () => {
       <img src={img1} alt="bg" />
       <div className="auth-container">
         <div className="auth-box">
-          <h2>{isLogin ? "Login" : "Sign Up"}</h2>
+          <h1>Welcome To Dual Life</h1>
+          <h2>{isLogin ? "Login" : "Sign Up"} to your Account</h2>
           <form onSubmit={handleSubmit}>
-            {!isLogin && (
+            {/* {!isLogin && (
               <>
                 <div className="input-group">
                   <label>Full Name</label>
@@ -80,8 +82,18 @@ const Login = () => {
                     onChange={handleChange}
                   />
                 </div>
+                <div className="input-group">
+                  <label>Phone Number</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    placeholder="Enter your phone number"
+                    value={formData.phone}
+                    onChange={handleChange}
+                  />
+                </div>
               </>
-            )}
+            )} */}
             <div className="input-group">
               <label>Email</label>
               <input
@@ -102,7 +114,7 @@ const Login = () => {
                 onChange={handleChange}
               />
             </div>
-            {!isLogin && (
+            {/* {!isLogin && (
               <div className="input-group">
                 <label>Confirm Password</label>
                 <input
@@ -113,14 +125,14 @@ const Login = () => {
                   onChange={handleChange}
                 />
               </div>
-            )}
+            )} */}
             <button type="submit" className="auth-btn">
               {isLogin ? "Login" : "Sign Up"}
             </button>
           </form>
           <p className="toggle-text">
-            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-            <span onClick={handleToggle}>{isLogin ? "Sign Up" : "Login"}</span>
+            {/* {isLogin ? "Don't have an account?" : "Already have an account?"}{" "} */}
+            {/* <span onClick={handleToggle}>{isLogin ? "Sign Up" : "Login"}</span> */}
           </p>
         </div>
       </div>

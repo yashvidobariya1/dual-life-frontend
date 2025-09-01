@@ -1,6 +1,6 @@
 // src/apiservice/ApiService.js
 
-const BASE_URL = "https://duallife-backend.vercel.app/auth";
+const BASE_URL = "https://duallife-backend.vercel.app";
 
 // POST call
 export const PostCall = async (endpoint, data) => {

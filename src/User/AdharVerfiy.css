@@ -32,19 +32,6 @@
   font-size: 24px;
 }
 
-.card-adhar p {
-  margin: 12px 0 !important;
-  margin: 0px !important;
-}
-
-.card-adhar {
-  background: var(--white);
-  border-radius: 12px;
-  padding: 40px;
-  margin-bottom: 20px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
 .input-wrapper {
   position: relative;
 }
@@ -92,89 +79,10 @@
   align-items: center;
   font-size: 18px;
 }
+
 .results h2 i {
   margin-right: 8px;
   color: #2563eb;
-}
-
-.user-card-adhar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.user-photo {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: 4px solid #dbeafe;
-  margin-right: 15px;
-}
-.status-badge {
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-}
-.status-success {
-  background: #d1fae5;
-  color: #065f46;
-  width: max-content;
-}
-.status-warning {
-  color: #92400e;
-}
-
-.test-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  background: #fafafa;
-}
-.test-item strong {
-  font-size: 18px;
-}
-
-.image-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 12px;
-}
-.image-card-adhar img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 8px 8px 0 0;
-}
-.image-card-adhar p {
-  padding: 8px;
-  text-align: center;
-  background: #fff;
-  border: 1px solid #eee;
-  border-top: none;
-}
-
-.download-btn {
-  background: #16a34a !important;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  color: white;
-  display: flex;
-  gap: 10px;
-  display: flex;
-  align-items: center;
-}
-.download-btn:hover {
-  background: #15803d !important;
-}
-
-.portal-footer {
-  text-align: center;
-  margin-top: 30px;
-  font-size: 14px;
-  color: gray;
 }
 
 @media (max-width: 768px) {

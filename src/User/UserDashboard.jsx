@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./Userdashboard.css";
 import { FaRegFilePdf } from "react-icons/fa6";
+import { MdOutlineScience } from "react-icons/md";
+import { FaCamera, FaIdCard } from "react-icons/fa";
+import { GetCall } from "../Screen/ApiService";
 
 const UserDashboard = () => {
   const { id } = useParams(); // Aadhaar ID from route
@@ -11,12 +14,9 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchReportData = async () => {
       try {
-        const res = await fetch(
-          `https://duallife-backend.vercel.app/report/by-aadhaar/${id}`
-        );
+        const res = await GetCall(`report/by-aadhaar/${id}`);
         const data = await res.json();
         if (data.success && data.reports?.length > 0) {
-          // take the first report (or latest)
           setReportData(data.reports[0]);
         }
       } catch (error) {
@@ -75,17 +75,18 @@ const UserDashboard = () => {
             </div>
             <button className="download-btn">
               <FaRegFilePdf />
-              {/* </i>{" "} */}
-              <p> Download Health Card</p>
+              <h6> Download Health Card</h6>
             </button>
           </div>
           <div className="card-adhar">
             <h2>
-              <i className="fas fa-flask"></i> Latest Test Results
+              <i className="icon-latest-dashbaord">
+                <MdOutlineScience />
+              </i>{" "}
+              Latest Test Results
             </h2>
             {healthResults && (
               <div>
-                {/* Hemoglobin */}
                 {healthResults.hemoglobin && (
                   <div className="test-item">
                     <div>
@@ -96,17 +97,18 @@ const UserDashboard = () => {
                         {healthResults.hemoglobin.unit}
                       </p>
                     </div>
-                    <div>
+                    <div className="item-content">
                       <strong>
                         {healthResults.hemoglobin.value}{" "}
-                        {healthResults.hemoglobin.unit}
+                        <p> {healthResults.hemoglobin.unit}</p>
                       </strong>
-                      <p>{healthResults.hemoglobin.status}</p>
+                      <h4 className="normal-range-dashboard">
+                        {healthResults.hemoglobin.status}
+                      </h4>
                     </div>
                   </div>
                 )}
 
-                {/* Glucose */}
                 {healthResults.glucose && (
                   <div className="test-item">
                     <div>
@@ -114,15 +116,17 @@ const UserDashboard = () => {
                       <p>
                         Normal range: {healthResults.glucose.normalRange.min}-
                         {healthResults.glucose.normalRange.max}{" "}
-                        {healthResults.glucose.unit}
+                        <p>{healthResults.glucose.unit}</p>
                       </p>
                     </div>
-                    <div>
+                    <div className="item-content">
                       <strong>
                         {healthResults.glucose.value}{" "}
-                        {healthResults.glucose.unit}
+                        <p>{healthResults.glucose.unit}</p>
                       </strong>
-                      <p>{healthResults.glucose.status}</p>
+                      <h4 className="normal-range-dashboard">
+                        {healthResults.glucose.status}
+                      </h4>
                     </div>
                   </div>
                 )}
@@ -134,7 +138,7 @@ const UserDashboard = () => {
                       <h3>Sickle Cell</h3>
                       <p>Result: {healthResults.sickleCell.result}</p>
                     </div>
-                    <div>
+                    <div className="item-content">
                       <p>{healthResults.sickleCell.status}</p>
                     </div>
                   </div>
@@ -143,23 +147,46 @@ const UserDashboard = () => {
             )}
           </div>
 
-          {/* DEVICE IMAGES */}
           <div className="card-adhar">
             <h2>
-              <i className="fas fa-camera"></i> Test Device Images
+              <div className="camera-record">
+                <FaCamera className="icon-camera" />
+                Test Device Images
+              </div>
             </h2>
             <div className="image-grid">
               {testImages?.map((img, i) => (
                 <div key={i} className="image-card-adhar">
-                  <img src={img.url} alt={img.imageType} />
+                  <img
+                    src={`data:image/png;base64,${img.imageData}`}
+                    alt={img.imageType}
+                  />
                   <p>{img.imageType}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="card-adhar">
+            <h2>
+              <div className="camera-record">
+                <FaIdCard className="icon-camera" />
+                Health Card Preview
+              </div>
+            </h2>
+            <div className="image-grid-card">
+              {testImages?.map((img, i) => (
+                <div key={i} className="image-card">
+                  <img
+                    src={`data:image/png;base64,${img.imageData}`}
+                    alt={img.imageType}
+                  />
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* FOOTER */}
         <footer className="portal-footer">
           <p>
             © 2023 Dual Life Science Healthcare Platform. All rights reserved.
