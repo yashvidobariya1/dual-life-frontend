@@ -1,35 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./TestRecord.css";
 import { useNavigate } from "react-router-dom";
 import { RiAdminFill } from "react-icons/ri";
 import { HiCalendarDateRange } from "react-icons/hi2";
 import { FaSearch } from "react-icons/fa";
+import moment from "moment";
+import { PostCall } from "./ApiService";
 
 const TestRecord = () => {
   const navigate = useNavigate();
-  const records = [
-    {
-      aadhaar: "XXXX-XXXX-7890",
-      status: "Approved",
-      statusClass: "approved",
-      subAdmin: "Rajesh Kumar",
-      date: "Jan 7, 2023",
-    },
-    {
-      aadhaar: "XXXX-XXXX-4567",
-      status: "Pending",
-      statusClass: "pending",
-      subAdmin: "Priya Sharma",
-      date: "Jan 6, 2023",
-    },
-    {
-      aadhaar: "XXXX-XXXX-1234",
-      status: "Rejected",
-      statusClass: "rejected",
-      subAdmin: "Amit Patel",
-      date: "Jan 5, 2023",
-    },
-  ];
+  const [record, setrecord] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRecentRecords = async () => {
+      try {
+        const response = await PostCall(
+          "admin/getAllPatients?recentPatients=true"
+        );
+        if (response?.success) {
+          setrecord(response.patients);
+        } else {
+          console.error("Failed to fetch records:", response?.message);
+        }
+      } catch (error) {
+        console.error("Error fetching recent patients:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecentRecords();
+  }, []);
 
   const handleDetails = () => {
     navigate("/test-records/recorddetails");
@@ -52,21 +54,21 @@ const TestRecord = () => {
 
       <div className="records-container">
         <ul>
-          {records.map((record, index) => (
+          {record.map((record, index) => (
             <li key={index} className="record-item">
               <div className="record-header">
-                <p className="aadhaar">Aadhaar: {record.aadhaar}</p>
-                <span className={`status ${record.statusClass}`}>
-                  {record.status}
-                </span>
+                <p className="aadhaar">Aadhaar: {record.aadhaarNumber}</p>
               </div>
               <div className="record-info">
                 <p className="sub-admin">
-                  <RiAdminFill /> Sub-admin: {record.subAdmin}
+                  <RiAdminFill /> {record.name}
                 </p>
                 <p className="date">
                   {" "}
-                  <HiCalendarDateRange /> {record.date}
+                  <HiCalendarDateRange />{" "}
+                  {record.registeredAt
+                    ? moment(record.registeredAt).format("DD/MM/YYYY")
+                    : "N/A"}
                 </p>
               </div>
               <div className="record-footer">

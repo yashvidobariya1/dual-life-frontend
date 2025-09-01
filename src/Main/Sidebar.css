@@ -58,7 +58,7 @@
   border-top: 1px solid var(--pending-bg);
   position: fixed;
   bottom: 46px;
-  width: calc(100% - 30px);
+  /* width: calc(100% - 30px); */
 }
 
 .admin-profile img {

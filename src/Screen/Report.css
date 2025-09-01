@@ -116,12 +116,12 @@
 
 .record-info p {
   margin: 8px 0;
-  font-size: 14px;
+  font-size: 16px;
   color: rgb(31, 30, 30);
 }
 
 .record-footer {
-  margin-top: 14px;
+  margin-top: 4px;
 }
 
 .view-btn {

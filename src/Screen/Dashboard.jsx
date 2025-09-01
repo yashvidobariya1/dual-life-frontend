@@ -123,7 +123,7 @@ const Dashboard = () => {
             </div>
             <div className="record-footer">
               <span>
-                <RiAdminFill /> Sub-admin: {rec.subAdmin}
+                <RiAdminFill /> {rec.name}
               </span>
               <span>
                 <HiCalendarDateRange />{" "}

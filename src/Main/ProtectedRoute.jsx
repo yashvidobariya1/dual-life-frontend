@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children }) => {
   const location = useLocation();
 
   // Case 1: Admin token → can access everything except AadhaarVerify/Login
-  if (token || reduxUser?.token) {
+  if ((token && token !== undefined) || reduxUser?.token) {
     return children;
   }
 
