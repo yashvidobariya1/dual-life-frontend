@@ -2,6 +2,13 @@
 
 const BASE_URL = "https://duallife-backend.vercel.app";
 
+// Function to get token from localStorage
+const getToken = () => {
+  const token = JSON.parse(localStorage.getItem("token"));
+  console.log("token", token);
+  return token;
+};
+
 // POST call
 export const PostCall = async (endpoint, data) => {
   try {
@@ -9,6 +16,7 @@ export const PostCall = async (endpoint, data) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`, // ✅ Add token
       },
       body: JSON.stringify(data),
     });
@@ -27,7 +35,11 @@ export const PostCall = async (endpoint, data) => {
 // GET call
 export const GetCall = async (endpoint) => {
   try {
-    const response = await fetch(`${BASE_URL}/${endpoint}`);
+    const response = await fetch(`${BASE_URL}/${endpoint}`, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -47,6 +59,7 @@ export const PutCall = async (endpoint, data) => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`, // ✅ Add token
       },
       body: JSON.stringify(data),
     });
@@ -67,6 +80,9 @@ export const DeleteCall = async (endpoint) => {
   try {
     const response = await fetch(`${BASE_URL}/${endpoint}`, {
       method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
     });
 
     if (!response.ok) {

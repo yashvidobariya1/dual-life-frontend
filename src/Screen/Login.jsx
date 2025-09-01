@@ -35,7 +35,7 @@ const Login = () => {
     try {
       if (isLogin) {
         const res = await PostCall("auth/login", {
-          userId: formData.email,
+          email: formData.email,
           password: formData.password,
         });
         localStorage.setItem("token", JSON.stringify(res.token));

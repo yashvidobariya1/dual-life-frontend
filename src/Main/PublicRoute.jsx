@@ -1,17 +1,20 @@
-// src/Main/PublicRoute.js
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const PublicRoute = ({ children }) => {
   const reduxUser = useSelector((state) => state.userInfo?.userInfo);
-  const localToken = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+  const adharverifytoken = localStorage.getItem("adharverifytoken");
 
-  const isAuthenticated = (reduxUser && reduxUser.token) || localToken;
-
-  if (isAuthenticated) {
-    // already logged in → go to dashboard (or any default page)
+  if (token || reduxUser?.token) {
+    // Admin already logged in → go to admin dashboard
     return <Navigate to="/dashboard" replace />;
+  }
+
+  if (adharverifytoken) {
+    // Aadhaar already verified → go to user dashboard
+    return <Navigate to="/userdashboard/:id" replace />; // replace 123 with actual Aadhaar user id
   }
 
   return children;

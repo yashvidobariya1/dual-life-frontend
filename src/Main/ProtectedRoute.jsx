@@ -1,19 +1,29 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ProtectedRoute = ({ children }) => {
   const reduxUser = useSelector((state) => state.userInfo?.userInfo);
-  const localToken = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+  const adharverifytoken = localStorage.getItem("adharverifytoken");
+  const location = useLocation();
 
-  // Check redux first, fallback to localStorage
-  const isAuthenticated = (reduxUser && reduxUser.token) || localToken;
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+  // Case 1: Admin token → can access everything except AadhaarVerify/Login
+  if (token || reduxUser?.token) {
+    return children;
   }
 
-  return children;
+  // Case 2: Aadhaar verify token → can ONLY access /userdashboard/:id
+  if (adharverifytoken) {
+    if (location.pathname.startsWith("/userdashboard")) {
+      return children;
+    } else {
+      return <Navigate to="/userdashboard/123" replace />; // you can redirect to correct id
+    }
+  }
+
+  // Case 3: Not authenticated → go to login
+  return <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

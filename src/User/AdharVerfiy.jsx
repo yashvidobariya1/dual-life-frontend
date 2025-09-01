@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./AdharVerfiy.css";
 import { useNavigate } from "react-router-dom";
+import { PostCall } from "../Screen/ApiService";
 
 const AdharVerfiy = () => {
   const [aadhaar, setAadhaar] = useState("");
@@ -17,7 +18,6 @@ const AdharVerfiy = () => {
     setAadhaar(value);
   };
 
-  // Step 1: Click Fetch -> Show OTP Popup
   const handleFetchClick = async () => {
     if (aadhaar.length !== 12) {
       alert("Please enter a valid 12-digit Aadhaar number");
@@ -60,26 +60,21 @@ const AdharVerfiy = () => {
     }
     setLoading(true);
     try {
-      const res = await fetch(
-        "https://duallife-backend.vercel.app/verification/verify-otp",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ refId, otp, aadhaarNumber: aadhaar }),
-        }
-      );
-      const data = await res.json();
+      const res = await PostCall("verification/verify-otp", {
+        refId,
+        otp,
+        aadhaarNumber: aadhaar,
+      });
 
-      if (res.ok) {
-        localStorage.setItem("token", JSON.stringify(res.token));
+      if (res.success) {
+        localStorage.setItem("adharverifytoken", JSON.stringify(res.token));
+        alert(res.message);
         navigate(`/userdashboard/${aadhaar}`);
       } else {
-        alert(data.message || "OTP verification failed");
+        alert(res.message || "OTP verification failed");
       }
     } catch (err) {
-      console.error(err);
+      console.error("OTP Verify Error:", err);
       alert("Something went wrong while verifying OTP");
     } finally {
       setLoading(false);
