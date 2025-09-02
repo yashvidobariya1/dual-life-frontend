@@ -37,7 +37,7 @@
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  color: #555;
+  color: var(--gray-color);
 }
 
 .settings {
@@ -92,6 +92,8 @@
 
 .flex-sidebar p {
   margin: 4px 0;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .menu li a {
@@ -105,7 +107,7 @@
 
 .menu li a.active {
   background: var(--white);
-  color: var(--primary-hover);
+  color: var(--primary-color);
   width: 100%;
 }
 

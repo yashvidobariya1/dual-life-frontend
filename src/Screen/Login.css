@@ -19,7 +19,7 @@
 }
 
 .auth-box {
-  background: white;
+  background: var(--white);
   padding: 30px;
   border-radius: 12px;
   /* box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); */
@@ -42,7 +42,7 @@
 .input-group label {
   font-size: 14px;
   margin-bottom: 6px;
-  color: #555;
+  color: var(--gray-color);
 }
 
 .input-group input {
@@ -53,14 +53,14 @@
 }
 
 .input-group input:focus {
-  border-color: #4a90e2;
+  border-color: var(--primary-color);
 }
 
 .auth-btn {
   width: 100%;
   padding: 12px;
-  background: #4a90e2;
-  color: white;
+  background: var(--primary-color);
+  color: var(--white);
   font-size: 16px;
   border: none;
   border-radius: 6px;
@@ -70,18 +70,18 @@
 }
 
 .auth-btn:hover {
-  background: #357ab7;
+  background: var(--green-color);
 }
 
 .toggle-text {
   text-align: center;
   margin-top: 15px;
   font-size: 14px;
-  color: #555;
+  color: var(--gray-color);
 }
 
 .toggle-text span {
-  color: #4a90e2;
+  color: var(--primary-hover);
   cursor: pointer;
   font-weight: 600;
 }
@@ -89,7 +89,7 @@
 .auth-box h1 {
   font-size: 44px;
   margin: 12px 0px 0px;
-  color: rgb(9, 9, 164);
+  color: var(--primary-color);
 }
 
 @media (max-width: 600px) {

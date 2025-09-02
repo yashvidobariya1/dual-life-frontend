@@ -11,12 +11,12 @@
 .title {
   font-size: 18px;
   font-weight: 600;
-  color: #1f2937; /* gray-900 */
+  color: var(--black-color);
 }
 
 .add-btn {
-  background-color: #2563eb; /* blue-600 */
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--white);
   border: none;
   padding: 8px 14px;
   border-radius: 6px;
@@ -25,19 +25,19 @@
   transition: 0.3s;
 }
 .add-btn:hover {
-  background-color: #1d4ed8; /* blue-700 */
+  background-color: var(--primary-color);
 }
 
 .list-container {
   margin-top: 20px;
-  background: #fff;
+  background: var(--white);
   border-radius: 8px;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .list-item {
   padding: 16px;
-  border-bottom: 1px solid #e5e7eb; /* divide-gray-200 */
+  border-bottom: 1px solid var(--gray-bg);
 }
 
 .list-item:last-child {
@@ -53,7 +53,7 @@
 .admin-name {
   font-size: 16px;
   font-weight: 500;
-  color: #2563eb;
+  color: var(--primary-color);
   margin: 0px;
 }
 
@@ -73,19 +73,19 @@
 }
 
 .edit-btn {
-  background: #dbeafe; /* blue-100 */
-  color: #1e40af; /* blue-800 */
+  background: #dbeafe;
+  color: var(--primary-hover);
 }
 .edit-btn:hover {
-  background: #bfdbfe; /* blue-200 */
+  background: #bfdbfe;
 }
 
 .deactivate-btn {
-  background: #fee2e2; /* red-100 */
-  color: #991b1b; /* red-800 */
+  background: var(--danger-bg);
+  color: var(--danger-color);
 }
 .deactivate-btn:hover {
-  background: #fecaca; /* red-200 */
+  background: var(--danger-bg);
 }
 
 .list-body {
@@ -94,7 +94,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   font-size: 14px;
-  color: #6b7280; /* gray-500 */
+  color: var(--gray-color);
 }
 
 .phone {
@@ -102,7 +102,7 @@
   align-items: center;
   margin: 0px;
   gap: 6px;
-  color: black;
+  color: var(--black-color);
 }
 
 .stats {
@@ -110,7 +110,7 @@
   align-items: center;
   gap: 6px;
   /* margin-top: 10px; */
-  color: rgb(59, 59, 59);
+  color: var(--gray-color);
 }
 
 /* Modal Background */
@@ -120,7 +120,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--black-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -129,7 +129,7 @@
 
 /* Modal Box */
 .modal {
-  background: #fff;
+  background: var(--white);
   padding: 20px;
   border-radius: 8px;
   width: 400px;
@@ -143,7 +143,7 @@
   margin-bottom: 12px;
   padding: 10px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--gray-color);
 }
 
 /* Buttons */
@@ -155,12 +155,12 @@
 
 .save-btn {
   background: var(--primary-color);
-  color: white;
+  color: var(--white);
 }
 
 .cancel-btn {
   background: var(--gray-color);
-  color: white;
+  color: var(--white);
 }
 
 .modal input {

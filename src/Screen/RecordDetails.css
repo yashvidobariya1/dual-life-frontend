@@ -16,7 +16,7 @@
 
 .card-testdetails {
   margin-top: 24px;
-  background: white;
+  background: var(--white);
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -38,7 +38,7 @@
 .card-testdetails-footer {
   padding: 16px;
   border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
+  background: var(--gray-bg);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -77,22 +77,22 @@
 
 .user-aadhaar {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--gray-color);
 }
 
 .address {
   margin-top: 12px;
   font-size: 14px;
-  color: #4b5563;
+  color: var(--gray-color);
 }
 
 .label {
   font-weight: 600;
-  color: #111827;
+  color: var(--black-color);
 }
 
 .doc-box {
-  background: #f9fafb;
+  background: var(--gray-light);
   padding: 12px;
   border-radius: 6px;
 }
@@ -110,7 +110,7 @@
 }
 
 .doc-item {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--gray-bg);
   border-radius: 6px;
   padding: 6px;
   text-align: center;
@@ -126,7 +126,7 @@
 .doc-item p {
   font-size: 12px;
   margin-top: 4px;
-  color: #6b7280;
+  color: var(--gray-color);
 }
 
 .field label {
@@ -134,7 +134,7 @@
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 4px;
-  color: #374151;
+  color: var(--gray-color);
 }
 
 .field input {
@@ -143,12 +143,12 @@
   font-size: 14px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  background: #f9fafb;
+  background: var(--gray-bg);
 }
 
 .status {
   font-size: 14px;
-  color: #374151;
+  color: var(--gray-color);
 }
 
 .badge {
@@ -160,13 +160,13 @@
 }
 
 .badge.pending {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--pending-bg);
+  color: var(--yellow-color);
 }
 
 .submitted {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--gray-color);
   margin-top: 4px;
 }
 
@@ -182,30 +182,30 @@
 
 .btn-back,
 .btn-pending {
-  background: white;
+  background: var(--white);
   border: 1px solid #d1d5db;
-  color: #374151;
+  color: var(--gray-color);
 }
 
 .btn-approve {
-  background: #16a34a;
-  color: white;
+  background: var(--green-color);
+  color: var(--white);
 }
 
 .btn-approve:hover {
-  background: #15803d;
+  background: var(--green-color);
 }
 
 .btn-reject {
-  background: #dc2626;
-  color: white;
+  background: var(--rejected-color);
+  color: var(--white);
 }
 
 .btn-reject:hover {
-  background: #b91c1c;
+  background: var(--rejected-color);
 }
 
 .btn-back:hover,
 .btn-pending:hover {
-  background: #f9fafb;
+  background: var(--white);
 }

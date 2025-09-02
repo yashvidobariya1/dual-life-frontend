@@ -11,7 +11,7 @@
 
 .header h2 {
   font-size: 18px;
-  color: #1f2937;
+  color: var(--black-color);
   font-weight: 600;
 }
 
@@ -26,7 +26,7 @@
 
 .search-box input {
   padding: 8px 30px 8px 10px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--gray-light);
   border-radius: 6px;
   font-size: 14px;
 }
@@ -36,26 +36,26 @@
   right: 8px;
   top: 8px;
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--gray-light);
 }
 
 .filter-btn {
   padding: 8px 14px;
   border: none;
   border-radius: 6px;
-  background: #2563eb;
-  color: white;
+  background: var(--primary-color);
+  color: var(--white);
   font-size: 14px;
   cursor: pointer;
 }
 
 .filter-btn:hover {
-  background: #1d4ed8;
+  background: var(--primary-color);
 }
 
 .records-container {
   margin-top: 20px;
-  background: white;
+  background: var(--white);
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -80,7 +80,7 @@
 .aadhaar {
   font-size: 14px;
   font-weight: 500;
-  color: #2563eb;
+  color: var(--primary-color);
 }
 
 .status {
@@ -91,18 +91,18 @@
 }
 
 .status.approved {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--success-bg);
+  color: var(--success-color);
 }
 
 .status.pending {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--pending-bg);
+  color: var(--pending-color);
 }
 
 .status.rejected {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--danger-bg);
+  color: var(--danger-color);
 }
 
 .record-info {
@@ -110,7 +110,7 @@
   justify-content: space-between;
   margin-top: 8px;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--gray-color);
 }
 
 .record-footer {
@@ -119,12 +119,12 @@
 
 .view-btn {
   font-size: 14px;
-  color: #2563eb;
+  color: var(--primary-color);
   background: none;
   border: none;
   cursor: pointer;
 }
 
 .view-btn:hover {
-  color: #1d4ed8;
+  color: var(--primary-color);
 }

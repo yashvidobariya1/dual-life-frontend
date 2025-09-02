@@ -89,19 +89,20 @@
   padding: 10px;
   border-radius: 6px;
   margin-right: 12px;
-  color: #fff;
+  color: var(--white);
 }
+
 .quick-icon.blue {
   background: #93c5fd;
-  color: var(--primary-color);
+  color: var(--primary-hover);
 }
 .quick-icon.green {
   background: #bbf7d0;
-  color: #16a34a;
+  color: var(--green-color);
 }
 .quick-icon.purple {
   background: #e9d5ff;
-  color: #7e22ce;
+  color: var(--purple-color);
 }
 
 .title-dashboard {
@@ -110,7 +111,7 @@
 }
 .subtitle {
   font-size: 13px;
-  color: #666;
+  color: var(--gray-color);
 }
 
 .recent-records {
@@ -122,11 +123,11 @@
 }
 
 .record {
-  background: #fff;
+  background: var(--white);
   padding: 14px;
   margin-bottom: 10px;
   border-radius: 8px;
-  border: 1px solid #eee;
+  border: 1px solid var(--gray-bg);
 }
 
 .record-header {
@@ -147,7 +148,7 @@
 }
 .status.approved {
   background: #dcfce7;
-  color: #166534;
+  color: var(--green-color);
 }
 .status.pending {
   background: #fef9c3;
@@ -155,7 +156,7 @@
 }
 .status.rejected {
   background: #fee2e2;
-  color: #991b1b;
+  color: var(--rejected-color);
 }
 
 .record-footer {
@@ -163,8 +164,5 @@
   justify-content: space-between;
   margin-top: 8px;
   font-size: 14px;
-  color: #555;
-}
-
-.dashboard-content {
+  color: var(--gray-color);
 }
