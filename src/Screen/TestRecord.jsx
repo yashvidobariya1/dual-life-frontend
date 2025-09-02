@@ -6,6 +6,7 @@ import { HiCalendarDateRange } from "react-icons/hi2";
 import { FaSearch } from "react-icons/fa";
 import moment from "moment";
 import { PostCall } from "./ApiService";
+import Loader from "../Main/Loader";
 
 const TestRecord = () => {
   const navigate = useNavigate();
@@ -36,6 +37,10 @@ const TestRecord = () => {
   const handleDetails = () => {
     navigate("/test-records/recorddetails");
   };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div id="test-records-view" className="test-records">

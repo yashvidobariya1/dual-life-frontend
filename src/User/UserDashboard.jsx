@@ -4,7 +4,6 @@ import "./Userdashboard.css";
 import { FaLandmarkFlag, FaRegFilePdf } from "react-icons/fa6";
 import { MdOutlineScience } from "react-icons/md";
 import { FaCamera, FaIdCard } from "react-icons/fa";
-import { GetCall } from "../Screen/ApiService";
 import Loader from "../Main/Loader";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -24,15 +23,14 @@ const UserDashboard = () => {
 
   const downloadPDF = async () => {
     const pdf = new jsPDF("p", "mm", "a4");
-    const margin = 10; // Page padding
-    const gap = 15; // Gap between front & back cards
+    const margin = 10;
+    const gap = 15;
     const frontElement = document.querySelector(".health-card.front");
     const frontCanvas = await html2canvas(frontElement, { scale: 2 });
     const frontImg = frontCanvas.toDataURL("image/png");
     const pdfWidth = pdf.internal.pageSize.getWidth() - margin * 2;
     const frontHeight = (frontCanvas.height * pdfWidth) / frontCanvas.width;
 
-    // --- Capture BACK ---
     const backElement = document.querySelector(".health-card.back");
     const backCanvas = await html2canvas(backElement, { scale: 2 });
     const backImg = backCanvas.toDataURL("image/png");

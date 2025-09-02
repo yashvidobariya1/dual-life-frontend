@@ -20,6 +20,7 @@ import AdharVerfiy from "./User/AdharVerfiy";
 import UserDashboard from "./User/UserDashboard";
 import ProtectedRoute from "./Main/ProtectedRoute";
 import PublicRoute from "./Main/PublicRoute";
+import ToastManager from "./Main/ToastManager";
 
 function Layout({
   children,
@@ -81,6 +82,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ToastManager />
       <Layout
         collapsed={collapsed}
         setCollapsed={setCollapsed}

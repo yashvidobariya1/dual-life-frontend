@@ -9,6 +9,7 @@ import { TbFileReport } from "react-icons/tb";
 import { HiCalendarDateRange } from "react-icons/hi2";
 import { PostCall } from "./ApiService";
 import moment from "moment";
+import Loader from "../Main/Loader";
 
 const Dashboard = () => {
   const [recentRecords, setRecentRecords] = useState([]);
@@ -82,6 +83,10 @@ const Dashboard = () => {
 
     fetchRecentRecords();
   }, []);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className="dashboard">

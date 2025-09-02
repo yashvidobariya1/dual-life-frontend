@@ -5,6 +5,7 @@ import { PostCall } from "../Screen/ApiService";
 import { useNavigate } from "react-router-dom";
 import { loginSuccess } from "../Store/authSlice";
 import { useDispatch } from "react-redux";
+import { showToast } from "../Main/ToastManager";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -39,6 +40,7 @@ const Login = () => {
           password: formData.password,
         });
         localStorage.setItem("token", JSON.stringify(res.token));
+        showToast(res?.message, "success");
         dispatch(
           loginSuccess({
             user: res.user,

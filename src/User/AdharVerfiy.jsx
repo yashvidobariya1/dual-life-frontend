@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "./AdharVerfiy.css";
 import { useNavigate } from "react-router-dom";
 import { PostCall } from "../Screen/ApiService";
+import { showToast } from "../Main/ToastManager";
+import Loader from "../Main/Loader";
 
 const AdharVerfiy = () => {
   const [aadhaar, setAadhaar] = useState("");
@@ -20,11 +22,10 @@ const AdharVerfiy = () => {
 
   const handleFetchClick = async () => {
     if (aadhaar.length !== 12) {
-      alert("Please enter a valid 12-digit Aadhaar number");
+      showToast("Please enter a valid 12-digit Aadhaar number", "error");
       return;
     }
     setLoading(true);
-
     try {
       const res = await fetch(
         "https://duallife-backend.vercel.app/verification/generate-otp",
@@ -43,11 +44,11 @@ const AdharVerfiy = () => {
         setrefId(data.refId);
         setShowOtpPopup(true);
       } else {
-        alert(data.message || "Failed to generate OTP");
+        showToast(data.message || "Failed to generate OTP", "success");
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong while generating OTP");
+      showToast("Something went wrong while generating OTP", "error");
     } finally {
       setLoading(false);
     }
@@ -55,7 +56,7 @@ const AdharVerfiy = () => {
 
   const handleOtpSubmit = async () => {
     if (otp.length !== 6) {
-      alert("Please enter a valid 6-digit OTP");
+      showToast("Please enter a valid 6-digit OTP", "error");
       return;
     }
     setLoading(true);
@@ -68,18 +69,22 @@ const AdharVerfiy = () => {
 
       if (res.success) {
         localStorage.setItem("adharverifytoken", JSON.stringify(res.token));
-        alert(res.message);
+        showToast(res.message, "success");
         navigate(`/userdashboard/${aadhaar}`);
       } else {
-        alert(res.message || "OTP verification failed");
+        showToast(res.message || "OTP verification failed", "error");
       }
     } catch (err) {
       console.error("OTP Verify Error:", err);
-      alert("Something went wrong while verifying OTP");
+      showToast("Something went wrong while verifying OTP", "error");
     } finally {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className="adharverfiy-div">

@@ -4,6 +4,8 @@ import { IoCallOutline } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa6";
 import { PostCall } from "../Screen/ApiService"; // <-- your API helper
 import moment from "moment";
+import { showToast } from "../Main/ToastManager";
+import Loader from "../Main/Loader";
 
 const SubAdmin = () => {
   const [step, setStep] = useState(0); // 0 = Aadhaar, 1 = OTP, 2 = Form
@@ -87,7 +89,7 @@ const SubAdmin = () => {
   // Step 1 → Generate OTP
   const handleGenerateOtp = async () => {
     if (!aadhaar || aadhaar.length !== 12) {
-      alert("Enter valid 12-digit Aadhaar number");
+      showToast("Enter valid 12-digit Aadhaar number", "error");
       return;
     }
     setLoading(true);
@@ -95,23 +97,20 @@ const SubAdmin = () => {
       const res = await PostCall("verification/generate-otp", {
         aadhaarNumber: aadhaar,
       });
-
-      // tolerant extraction of ref id (different APIs use different shapes)
       const returnedRefId =
         res?.data?.refId || res?.refId || res?.data?.referenceId || "";
 
       if (res?.success && returnedRefId) {
         setRefId(returnedRefId);
-        setStep(1); // move to OTP entry
+        setStep(1);
       } else if (res?.success) {
-        // some APIs don't return refId but still succeed
         setStep(1);
       } else {
-        alert(res?.message || "Failed to generate OTP");
+        showToast(res?.message || "Failed to generate OTP", "error");
       }
     } catch (err) {
       console.error(err);
-      alert("Error generating OTP");
+      showToast("Error generating OTP", "erorr");
     } finally {
       setLoading(false);
     }
@@ -119,7 +118,7 @@ const SubAdmin = () => {
 
   const handleVerifyOtp = async () => {
     if (!otp || otp.length !== 6) {
-      alert("Enter valid 6-digit OTP");
+      showToast("Enter valid 6-digit OTP", "error");
       return;
     }
     setLoading(true);
@@ -148,13 +147,13 @@ const SubAdmin = () => {
 
         setStep(2);
       } else {
-        alert(res?.message || "Invalid OTP");
+        showToast(res?.message || "Invalid OTP", "error");
       }
     } catch (err) {
       console.error("OTP verify error:", err);
       const msg =
         err?.response?.data?.message || err?.message || "Error verifying OTP";
-      alert(msg);
+      showToast(msg, "error");
     } finally {
       setLoading(false);
     }
@@ -164,10 +163,9 @@ const SubAdmin = () => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      showToast("Passwords do not match!", "error");
       return;
     }
-
     const body = {
       aadhaarNumber: aadhaar,
       name: verifyResponse?.name,
@@ -177,20 +175,23 @@ const SubAdmin = () => {
       kycDataId: verifyResponse?.address?._id,
       dob: verifyResponse?.dob,
     };
-    console.log("data", body);
     try {
       const res = await PostCall("auth/register-subadmin", body);
 
       if (res?.success) {
-        alert("Sub-admin registered successfully!");
+        showToast("Sub-admin registered successfully!", "success");
         resetAll();
       } else {
-        alert(res?.message || "Failed to register Sub-admin");
+        showToast(res?.message || "Failed to register Sub-admin", "error");
       }
     } catch (err) {
       console.error(err);
     }
   };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div id="subadmin-view" className="subadmin-container">
