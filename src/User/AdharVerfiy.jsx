@@ -37,9 +37,7 @@ const AdharVerfiy = () => {
           body: JSON.stringify({ aadhaarNumber: aadhaar }),
         }
       );
-
       const data = await res.json();
-
       if (res.ok) {
         setrefId(data.refId);
         setShowOtpPopup(true);
@@ -47,7 +45,6 @@ const AdharVerfiy = () => {
         showToast(data.message || "Failed to generate OTP", "success");
       }
     } catch (err) {
-      console.error(err);
       showToast("Something went wrong while generating OTP", "error");
     } finally {
       setLoading(false);
