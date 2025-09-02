@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./SubAdmin.css";
 import { IoCallOutline } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa6";
@@ -11,12 +11,12 @@ const SubAdmin = () => {
   const [step, setStep] = useState(0); // 0 = Aadhaar, 1 = OTP, 2 = Form
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [subadminData, setsubadminData] = useState([]);
   const [aadhaar, setAadhaar] = useState("");
   const [otp, setOtp] = useState("");
   const [refId, setRefId] = useState("");
   const [verifyResponse, setVerifyResponse] = useState([]);
-
+  const [filter, setFilter] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     aadhaar: "",
@@ -74,19 +74,16 @@ const SubAdmin = () => {
   };
 
   const goBack = () => {
-    // when going back from OTP to Aadhaar clear otp & refId
     if (step === 1) {
       setOtp("");
       setRefId("");
     }
     if (step === 2) {
-      // if going from form back to OTP, keep refId/ aadhaar
       setFormData((p) => ({ ...p, password: "", confirmPassword: "" }));
     }
     setStep((s) => Math.max(0, s - 1));
   };
 
-  // Step 1 → Generate OTP
   const handleGenerateOtp = async () => {
     if (!aadhaar || aadhaar.length !== 12) {
       showToast("Enter valid 12-digit Aadhaar number", "error");
@@ -159,6 +156,11 @@ const SubAdmin = () => {
     }
   };
 
+  const handleChange = (event) => {
+    setFilter(event.target.value);
+    console.log("Selected:", event.target.value);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -189,6 +191,28 @@ const SubAdmin = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchRecentRecords = async () => {
+      try {
+        setLoading(true);
+        const response = await PostCall(
+          `admin/getAllSubAdmins?recentSubAdmins=${filter}`
+        );
+        if (response?.success) {
+          setsubadminData(response.subAdmins);
+        } else {
+          console.error("Failed to fetch records:", response?.message);
+        }
+      } catch (error) {
+        console.error("Error fetching recent patients:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecentRecords();
+  }, [filter]);
+
   if (loading) {
     return <Loader />;
   }
@@ -203,7 +227,14 @@ const SubAdmin = () => {
       </div>
 
       <div className="list-container">
-        {subAdmins.map((admin, index) => (
+        <div className="filter">
+          <label>Filter: </label>
+          <select id="filter" value={filter} onChange={handleChange}>
+            <option value="false">All</option>
+            <option value="true">Recent</option>
+          </select>
+        </div>
+        {subadminData.map((admin, index) => (
           <div key={index} className="list-item">
             <div className="list-header">
               <p className="admin-name">{admin.name}</p>

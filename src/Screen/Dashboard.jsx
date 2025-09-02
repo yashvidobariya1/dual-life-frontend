@@ -66,6 +66,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchRecentRecords = async () => {
       try {
+        setLoading(true);
         const response = await PostCall(
           "admin/getAllPatients?recentPatients=true"
         );

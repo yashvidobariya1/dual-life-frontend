@@ -170,6 +170,7 @@
 }
 .download-btn:hover {
   background: #15803d !important;
+  cursor: pointer;
 }
 
 .portal-footer {
@@ -245,6 +246,7 @@
   border: none;
   padding: 10px 15px;
   border-radius: 4px;
+  cursor: pointer;
 }
 
 @media (max-width: 800px) {

@@ -168,3 +168,12 @@
   margin: 20px 0;
   padding: 10px 15px;
 }
+
+.filter {
+  text-align: right;
+  padding: 10px;
+}
+
+filter #filter {
+  padding: 5px;
+}
