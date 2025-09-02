@@ -154,11 +154,17 @@
 }
 
 .save-btn {
-  background: #4caf50;
+  background: var(--primary-color);
   color: white;
 }
 
 .cancel-btn {
-  background: #f44336;
+  background: var(--gray-color);
   color: white;
+}
+
+.modal input {
+  width: calc(100% - 30px);
+  margin: 20px 0;
+  padding: 10px 15px;
 }

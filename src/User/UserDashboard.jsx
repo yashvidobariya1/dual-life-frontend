@@ -1,43 +1,105 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import "./Userdashboard.css";
-import { FaRegFilePdf } from "react-icons/fa6";
+import { FaLandmarkFlag, FaRegFilePdf } from "react-icons/fa6";
 import { MdOutlineScience } from "react-icons/md";
 import { FaCamera, FaIdCard } from "react-icons/fa";
 import { GetCall } from "../Screen/ApiService";
+import Loader from "../Main/Loader";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const UserDashboard = () => {
-  const { id } = useParams(); // Aadhaar ID from route
+  const { id } = useParams();
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const Navigate = useNavigate();
+  const cardRef = useRef();
+
+  const getToken = () => {
+    const token = JSON.parse(localStorage.getItem("adharverifytoken"));
+    console.log("token", token);
+    return token;
+  };
+
+  const downloadPDF = async () => {
+    const pdf = new jsPDF("p", "mm", "a4");
+    const margin = 10; // Page padding
+    const gap = 15; // Gap between front & back cards
+    const frontElement = document.querySelector(".health-card.front");
+    const frontCanvas = await html2canvas(frontElement, { scale: 2 });
+    const frontImg = frontCanvas.toDataURL("image/png");
+    const pdfWidth = pdf.internal.pageSize.getWidth() - margin * 2;
+    const frontHeight = (frontCanvas.height * pdfWidth) / frontCanvas.width;
+
+    // --- Capture BACK ---
+    const backElement = document.querySelector(".health-card.back");
+    const backCanvas = await html2canvas(backElement, { scale: 2 });
+    const backImg = backCanvas.toDataURL("image/png");
+    const backHeight = (backCanvas.height * pdfWidth) / backCanvas.width;
+
+    // Place FRONT card
+    let y = margin;
+    pdf.addImage(frontImg, "PNG", margin, y, pdfWidth, frontHeight);
+
+    // Place BACK card below with gap
+    y += frontHeight + gap;
+    pdf.addImage(backImg, "PNG", margin, y, pdfWidth, backHeight);
+
+    pdf.save("health-card.pdf");
+  };
 
   useEffect(() => {
     const fetchReportData = async () => {
       try {
-        const res = await GetCall(`report/by-aadhaar/${id}`);
-        const data = await res.json();
-        if (data.success && data.reports?.length > 0) {
-          setReportData(data.reports[0]);
+        setLoading(true); // start loading
+
+        const response = await fetch(
+          `https://duallife-backend.vercel.app/report/by-aadhaar/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${getToken()}`,
+            },
+          }
+        );
+
+        const data = await response.json(); // parse JSON once
+
+        if (response.ok && data.success && data.reports?.length > 0) {
+          setReportData(data.reports[0]); // set first report
+        } else {
+          setReportData(null); // no data case
         }
       } catch (error) {
         console.error("Error fetching report:", error);
+        setReportData(null);
       } finally {
-        setLoading(false);
+        setLoading(false); // stop loading in all cases
       }
     };
 
     fetchReportData();
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
-  if (!reportData) return <p>No report data found</p>;
+  // if (loading) return <p>Loading...</p>;
+  if (!reportData) return <Loader />;
 
   const { patient, healthResults, testImages } = reportData;
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  const handlelogout = () => {
+    localStorage.removeItem("adharverifytoken");
+    Navigate("/");
+  };
 
   return (
     <div className="adharverfiy-div">
       <div className="portal-container">
-        {/* HEADER */}
         <header className="portal-header">
           <div className="icon-circle">
             <i className="fas fa-heartbeat"></i>
@@ -49,7 +111,9 @@ const UserDashboard = () => {
         </header>
 
         <div className="results">
-          {/* USER INFO */}
+          <div className="logout">
+            <button onClick={handlelogout}>Logout</button>
+          </div>
           <div className="card-adhar user-card-adhar">
             <div className="card-detialls">
               <img
@@ -75,7 +139,7 @@ const UserDashboard = () => {
             </div>
             <button className="download-btn">
               <FaRegFilePdf />
-              <h6> Download Health Card</h6>
+              <h6 onClick={downloadPDF}> Download Health Card</h6>
             </button>
           </div>
           <div className="card-adhar">
@@ -146,7 +210,6 @@ const UserDashboard = () => {
               </div>
             )}
           </div>
-
           <div className="card-adhar">
             <h2>
               <div className="camera-record">
@@ -166,7 +229,6 @@ const UserDashboard = () => {
               ))}
             </div>
           </div>
-
           <div className="card-adhar">
             <h2>
               <div className="camera-record">
@@ -175,14 +237,66 @@ const UserDashboard = () => {
               </div>
             </h2>
             <div className="image-grid-card">
-              {testImages?.map((img, i) => (
-                <div key={i} className="image-card">
-                  <img
-                    src={`data:image/png;base64,${img.imageData}`}
-                    alt={img.imageType}
-                  />
+              <div className="health-card-container" ref={cardRef}>
+                <div className="health-card front">
+                  <div className="card-title">
+                    <div className="flex-card">
+                      <div className="card-icon">
+                        <FaLandmarkFlag className="mark-icon" />
+                      </div>
+                      <div className="card-content">
+                        <h3>Tribal Development Department</h3>
+                        <p>Goverment of Country Name</p>
+                      </div>
+                    </div>
+                  </div>
+                  <p>
+                    <strong>Name:</strong> {patient?.name}
+                  </p>
+                  <p>
+                    <strong>Age:</strong> {patient?.age || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Gender:</strong> {patient?.gender || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {patient?.address}
+                  </p>
+                  <p>
+                    <strong>Caste:</strong> {patient?.caste || "N/A"}
+                  </p>
                 </div>
-              ))}
+
+                <div className="health-card back">
+                  <div className="card-title">
+                    <div className="flex-card">
+                      <div className="card-icon">
+                        <FaLandmarkFlag className="mark-icon" />
+                      </div>
+                      <div className="card-content">
+                        <h3>Tribal Development Department</h3>
+                        <p>Goverment of Country Name</p>
+                      </div>
+                    </div>
+                  </div>
+                  <p>
+                    <strong>Hemoglobin:</strong>{" "}
+                    {healthResults?.hemoglobin?.value}{" "}
+                    {healthResults?.hemoglobin?.unit}
+                  </p>
+                  <p>
+                    <strong>Glucose:</strong> {healthResults?.glucose?.value}{" "}
+                    {healthResults?.glucose?.unit}
+                  </p>
+                  <p>
+                    <strong>Blood Group:</strong> {healthResults?.bloodGroup}
+                  </p>
+                  <p>
+                    <strong>Sickle Cell:</strong>{" "}
+                    {healthResults?.sickleCell?.result}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

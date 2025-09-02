@@ -2,12 +2,24 @@ import React, { useState } from "react";
 import "./SubAdmin.css";
 import { IoCallOutline } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa6";
+import { PostCall } from "../Screen/ApiService"; // <-- your API helper
+import moment from "moment";
 
 const SubAdmin = () => {
+  const [step, setStep] = useState(0); // 0 = Aadhaar, 1 = OTP, 2 = Form
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [aadhaar, setAadhaar] = useState("");
+  const [otp, setOtp] = useState("");
+  const [refId, setRefId] = useState("");
+  const [verifyResponse, setVerifyResponse] = useState([]);
+
   const [formData, setFormData] = useState({
     name: "",
     aadhaar: "",
+    email: "", // 🔹 added
+    mobileNumber: "",
     password: "",
     confirmPassword: "",
   });
@@ -33,11 +45,122 @@ const SubAdmin = () => {
     },
   ];
 
-  const handleChange = (e) => {
+  const handleFormChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const resetAll = () => {
+    setStep(0);
+    setAadhaar("");
+    setOtp("");
+    setRefId("");
+    setVerifyResponse([]);
+    setFormData({
+      name: "",
+      mobileNumber: "",
+      password: "",
+      confirmPassword: "",
+    });
+    setShowModal(false);
+    setLoading(false);
+  };
+
+  const openModal = () => {
+    resetAll();
+    setShowModal(true);
+    setStep(0);
+  };
+
+  const goBack = () => {
+    // when going back from OTP to Aadhaar clear otp & refId
+    if (step === 1) {
+      setOtp("");
+      setRefId("");
+    }
+    if (step === 2) {
+      // if going from form back to OTP, keep refId/ aadhaar
+      setFormData((p) => ({ ...p, password: "", confirmPassword: "" }));
+    }
+    setStep((s) => Math.max(0, s - 1));
+  };
+
+  // Step 1 → Generate OTP
+  const handleGenerateOtp = async () => {
+    if (!aadhaar || aadhaar.length !== 12) {
+      alert("Enter valid 12-digit Aadhaar number");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await PostCall("verification/generate-otp", {
+        aadhaarNumber: aadhaar,
+      });
+
+      // tolerant extraction of ref id (different APIs use different shapes)
+      const returnedRefId =
+        res?.data?.refId || res?.refId || res?.data?.referenceId || "";
+
+      if (res?.success && returnedRefId) {
+        setRefId(returnedRefId);
+        setStep(1); // move to OTP entry
+      } else if (res?.success) {
+        // some APIs don't return refId but still succeed
+        setStep(1);
+      } else {
+        alert(res?.message || "Failed to generate OTP");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error generating OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otp || otp.length !== 6) {
+      alert("Enter valid 6-digit OTP");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await PostCall("verification/verify-otp", {
+        refId,
+        otp,
+        aadhaarNumber: aadhaar,
+      });
+
+      console.log("OTP verify response:", res);
+
+      if (res?.success) {
+        setVerifyResponse(res.kycData);
+
+        setFormData({
+          name: res?.kycData?.name || "",
+          aadhaar: aadhaar,
+          email: "",
+          mobileNumber: "",
+          password: "",
+          confirmPassword: "",
+          kycDataId: res?.kycData?._id,
+          dob: res?.kycData?.dob,
+        });
+
+        setStep(2);
+      } else {
+        alert(res?.message || "Invalid OTP");
+      }
+    } catch (err) {
+      console.error("OTP verify error:", err);
+      const msg =
+        err?.response?.data?.message || err?.message || "Error verifying OTP";
+      alert(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -45,17 +168,35 @@ const SubAdmin = () => {
       return;
     }
 
-    console.log("New SubAdmin Data:", formData);
-    // Here you can call your API to save sub-admin
-    setShowModal(false);
-    setFormData({ name: "", aadhaar: "", password: "", confirmPassword: "" });
+    const body = {
+      aadhaarNumber: aadhaar,
+      name: verifyResponse?.name,
+      email: formData.email,
+      phone: formData.mobileNumber,
+      password: formData.password,
+      kycDataId: verifyResponse?.address?._id,
+      dob: verifyResponse?.dob,
+    };
+    console.log("data", body);
+    try {
+      const res = await PostCall("auth/register-subadmin", body);
+
+      if (res?.success) {
+        alert("Sub-admin registered successfully!");
+        resetAll();
+      } else {
+        alert(res?.message || "Failed to register Sub-admin");
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
     <div id="subadmin-view" className="subadmin-container">
       <div className="header">
         <h2 className="title">Sub-admin Management</h2>
-        <button className="add-btn" onClick={() => setShowModal(true)}>
+        <button className="add-btn" onClick={openModal}>
           Add New Sub-admin
         </button>
       </div>
@@ -84,58 +225,173 @@ const SubAdmin = () => {
         ))}
       </div>
 
-      {/* Popup Modal */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
-            <h3>Add New Sub-admin</h3>
-            <form onSubmit={handleSubmit} className="modal-form">
-              <input
-                type="text"
-                name="name"
-                placeholder="Enter Name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="text"
-                name="aadhaar"
-                placeholder="Enter Aadhaar Number"
-                value={formData.aadhaar}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Enter Password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
+            {step === 0 && (
+              <>
+                <h3>Enter Aadhaar Number</h3>
+                <input
+                  type="text"
+                  value={aadhaar}
+                  onChange={(e) =>
+                    setAadhaar(e.target.value.replace(/\D/g, "").slice(0, 12))
+                  }
+                  placeholder="Enter Aadhaar Number"
+                  maxLength={12}
+                  inputMode="numeric"
+                />
+                <div className="modal-actions">
+                  <button
+                    onClick={handleGenerateOtp}
+                    className="btn save-btn"
+                    disabled={loading}
+                  >
+                    {loading ? "Sending..." : "Send OTP"}
+                  </button>
+                  <button className="btn cancel-btn" onClick={resetAll}>
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )}
 
-              <div className="modal-actions">
-                <button type="submit" className="btn save-btn">
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn cancel-btn"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+            {step === 1 && (
+              <>
+                <h3>Enter OTP</h3>
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) =>
+                    setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                  }
+                  placeholder="Enter OTP"
+                  maxLength={6}
+                  inputMode="numeric"
+                />
+                <div className="modal-actions">
+                  <button
+                    onClick={handleVerifyOtp}
+                    className="btn save-btn"
+                    disabled={loading}
+                  >
+                    {loading ? "Verifying..." : "Verify OTP"}
+                  </button>
+                  <button className="btn cancel-btn" onClick={resetAll}>
+                    Cancel
+                  </button>
+                  <button
+                    className="btn back-btn"
+                    type="button"
+                    onClick={goBack}
+                  >
+                    Back
+                  </button>
+                </div>
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                <h3>Add New Sub-admin</h3>
+                <form onSubmit={handleSubmit} className="modal-form">
+                  {/* Aadhaar (read-only) */}
+                  <input
+                    type="text"
+                    name="aadhaar"
+                    value={formData.aadhaar}
+                    readOnly
+                  />
+
+                  {/* Name (read-only) */}
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    readOnly
+                  />
+
+                  {/* Email (editable) */}
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter Email"
+                    value={formData.email}
+                    onChange={handleFormChange}
+                    required
+                  />
+
+                  {/* Mobile (editable) */}
+                  <input
+                    type="text"
+                    name="mobileNumber"
+                    placeholder="Enter Mobile Number"
+                    value={formData.mobileNumber}
+                    onChange={handleFormChange}
+                    required
+                  />
+
+                  {/* DOB (read-only) */}
+                  <input
+                    type="date"
+                    name="dob"
+                    value={
+                      verifyResponse.dob
+                        ? moment(verifyResponse.dob).format("YYYY-MM-DD")
+                        : ""
+                    }
+                    readOnly
+                  />
+
+                  {/* Gender (read-only) */}
+                  <input
+                    type="text"
+                    name="gender"
+                    value={
+                      verifyResponse?.gender === "M"
+                        ? "Male"
+                        : verifyResponse?.gender === "F"
+                        ? "Female"
+                        : ""
+                    }
+                    readOnly
+                  />
+
+                  {/* Password (editable) */}
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter Password"
+                    value={formData.password}
+                    onChange={handleFormChange}
+                    required
+                  />
+
+                  {/* Confirm Password (editable) */}
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    value={formData.confirmPassword}
+                    onChange={handleFormChange}
+                    required
+                  />
+
+                  <div className="modal-actions">
+                    <button type="submit" className="btn save-btn">
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      className="btn cancel-btn"
+                      onClick={resetAll}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
           </div>
         </div>
       )}
