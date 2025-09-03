@@ -41,7 +41,7 @@ const Header = ({ toggleSidebar }) => {
   const handleLogout = () => {
     localStorage.clear();
     dispatch(clearUserInfo());
-    window.location.href = "/";
+    window.location.href = "/login";
   };
 
   return (
