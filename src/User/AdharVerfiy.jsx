@@ -43,7 +43,7 @@ const AdharVerfiy = () => {
         setrefId(data.refId);
         setShowOtpPopup(true);
       } else {
-        showToast(data.message || "Failed to generate OTP", "success");
+        showToast(data.message || "Failed to generate OTP", "error");
       }
     } catch (err) {
       showToast("Something went wrong while generating OTP", "error");
