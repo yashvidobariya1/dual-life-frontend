@@ -90,7 +90,7 @@ const AdharVerfiy = () => {
       <div className="portal-container">
         <header className="portal-header">
           <div className="icon-circle">
-            <i className="fas fa-heartbeat">
+            <i className="fa-heartbeat">
               <MdHealthAndSafety />
             </i>
           </div>

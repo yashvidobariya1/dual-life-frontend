@@ -18,7 +18,7 @@ const ProtectedRoute = ({ children }) => {
     if (location.pathname.startsWith("/userdashboard")) {
       return children;
     } else {
-      return <Navigate to="/userdashboard/123" replace />; // you can redirect to correct id
+      return <Navigate to="/userdashboard" replace />; // you can redirect to correct id
     }
   }
 

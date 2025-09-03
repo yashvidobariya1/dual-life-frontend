@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Userdashboard.css";
 import { FaLandmarkFlag, FaRegFilePdf } from "react-icons/fa6";
-import { MdOutlineScience } from "react-icons/md";
+import { MdHealthAndSafety, MdOutlineScience } from "react-icons/md";
 import { FaCamera, FaIdCard } from "react-icons/fa";
 import Loader from "../Main/Loader";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { saveAs } from "file-saver";
 
 const UserDashboard = () => {
   const id = localStorage.getItem("adharnumber");
@@ -25,26 +26,41 @@ const UserDashboard = () => {
     const pdf = new jsPDF("p", "mm", "a4");
     const margin = 10;
     const gap = 15;
+
+    // FRONT
     const frontElement = document.querySelector(".health-card.front");
-    const frontCanvas = await html2canvas(frontElement, { scale: 2 });
+    const frontCanvas = await html2canvas(frontElement, { scale: 1.5 });
     const frontImg = frontCanvas.toDataURL("image/png");
     const pdfWidth = pdf.internal.pageSize.getWidth() - margin * 2;
     const frontHeight = (frontCanvas.height * pdfWidth) / frontCanvas.width;
 
+    // BACK
     const backElement = document.querySelector(".health-card.back");
-    const backCanvas = await html2canvas(backElement, { scale: 2 });
+    const backCanvas = await html2canvas(backElement, { scale: 1.5 });
     const backImg = backCanvas.toDataURL("image/png");
     const backHeight = (backCanvas.height * pdfWidth) / backCanvas.width;
 
-    // Place FRONT card
+    // Add to PDF
     let y = margin;
     pdf.addImage(frontImg, "PNG", margin, y, pdfWidth, frontHeight);
-
-    // Place BACK card below with gap
     y += frontHeight + gap;
     pdf.addImage(backImg, "PNG", margin, y, pdfWidth, backHeight);
 
-    pdf.save("health-card.pdf");
+    // Create blob
+    const pdfBlob = pdf.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+
+    // Detect iOS Safari
+    const isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (isIOS) {
+      // Open in new tab (works in iOS Safari)
+      window.open(pdfUrl, "_blank");
+    } else {
+      // Normal download (desktop + Android)
+      saveAs(pdfBlob, "health-card.pdf");
+    }
   };
 
   useEffect(() => {
@@ -81,7 +97,6 @@ const UserDashboard = () => {
     fetchReportData();
   }, [id]);
 
-  // if (loading) return <p>Loading...</p>;
   if (!reportData) return <Loader />;
 
   const { patient, healthResults, testImages } = reportData;
@@ -102,7 +117,9 @@ const UserDashboard = () => {
       <div className="dashboard-portal-container">
         <header className="portal-header">
           <div className="icon-circle">
-            <i className="fas fa-heartbeat"></i>
+            <i className="fa-heartbeat">
+              <MdHealthAndSafety />
+            </i>
           </div>
           <h1>Dual Life Science Healthcare Portal</h1>
           <p>
