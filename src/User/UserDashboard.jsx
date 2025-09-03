@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./Userdashboard.css";
 import { FaLandmarkFlag, FaRegFilePdf } from "react-icons/fa6";
 import { MdOutlineScience } from "react-icons/md";
@@ -9,7 +9,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 const UserDashboard = () => {
-  const { id } = useParams();
+  const id = localStorage.getItem("adharnumber");
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(true);
   const Navigate = useNavigate();
@@ -91,13 +91,15 @@ const UserDashboard = () => {
   }
 
   const handlelogout = () => {
+    localStorage.clear();
     localStorage.removeItem("adharverifytoken");
+    localStorage.removeItem("adharnumber");
     Navigate("/");
   };
 
   return (
     <div className="adharverfiy-div">
-      <div className="portal-container">
+      <div className="dashboard-portal-container">
         <header className="portal-header">
           <div className="icon-circle">
             <i className="fas fa-heartbeat"></i>

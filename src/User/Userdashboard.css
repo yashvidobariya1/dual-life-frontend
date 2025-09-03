@@ -250,6 +250,13 @@
   cursor: pointer;
 }
 
+.dashboard-portal-container {
+  max-width: 1200px;
+  margin: auto;
+  height: auto;
+  padding: 20px;
+}
+
 @media (max-width: 800px) {
   .health-card-container {
     flex-direction: column;

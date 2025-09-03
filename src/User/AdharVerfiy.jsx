@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { PostCall } from "../Screen/ApiService";
 import { showToast } from "../Main/ToastManager";
 import Loader from "../Main/Loader";
+import { MdHealthAndSafety } from "react-icons/md";
 
 const AdharVerfiy = () => {
   const [aadhaar, setAadhaar] = useState("");
@@ -66,8 +67,9 @@ const AdharVerfiy = () => {
 
       if (res.success) {
         localStorage.setItem("adharverifytoken", JSON.stringify(res.token));
+        localStorage.setItem("adharnumber", aadhaar);
         showToast(res.message, "success");
-        navigate(`/userdashboard/${aadhaar}`);
+        navigate(`/userdashboard`);
       } else {
         showToast(res.message || "OTP verification failed", "error");
       }
@@ -88,7 +90,9 @@ const AdharVerfiy = () => {
       <div className="portal-container">
         <header className="portal-header">
           <div className="icon-circle">
-            <i className="fas fa-heartbeat"></i>
+            <i className="fas fa-heartbeat">
+              <MdHealthAndSafety />
+            </i>
           </div>
           <h1>Dual Life Science Healthcare Portal </h1>
           <p>

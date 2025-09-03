@@ -35,7 +35,7 @@ function Layout({
   // pages where sidebar & header should NOT show
   const hideLayoutPaths = ["/login", "/"];
   // special handling for dynamic route (/userdashboard/:id)
-  const isUserDashboardPage = location.pathname.startsWith("/userdashboard/");
+  const isUserDashboardPage = location.pathname.startsWith("/userdashboard");
 
   const shouldHideLayout =
     hideLayoutPaths.includes(location.pathname) || isUserDashboardPage;
@@ -159,7 +159,7 @@ function App() {
             }
           />
           <Route
-            path="/userdashboard/:id"
+            path="/userdashboard"
             element={
               <ProtectedRoute>
                 <UserDashboard />

@@ -14,7 +14,7 @@ const PublicRoute = ({ children }) => {
 
   if (adharverifytoken) {
     // Aadhaar already verified → go to user dashboard
-    return <Navigate to="/userdashboard/:id" replace />; // replace 123 with actual Aadhaar user id
+    return <Navigate to="/userdashboard" replace />; // replace 123 with actual Aadhaar user id
   }
 
   return children;
