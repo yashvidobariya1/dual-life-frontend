@@ -1,5 +1,5 @@
 .subadmin-container {
-  padding: 30px;
+  padding: 25px;
 }
 
 .header {
@@ -29,7 +29,7 @@
 }
 
 .list-container {
-  margin-top: 20px;
+  margin-top: 10px;
   background: var(--white);
   border-radius: 8px;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
@@ -109,7 +109,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  /* margin-top: 10px; */
+  margin: 6px;
   color: var(--gray-color);
 }
 
@@ -169,11 +169,40 @@
   padding: 10px 15px;
 }
 
-.filter {
-  text-align: right;
-  padding: 10px;
-}
-
 filter #filter {
   padding: 5px;
+}
+
+.filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: end;
+  margin: 15px 0;
+}
+
+.filter-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.filter-select {
+  padding: 5px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-select:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 4px rgba(74, 144, 226, 0.4);
+}
+
+.filter-select:hover {
+  border-color: #999;
 }

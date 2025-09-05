@@ -138,6 +138,10 @@
   gap: 10px;
 }
 
+.img-sidebar.collapsed {
+  flex-direction: column !important;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);

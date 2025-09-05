@@ -37,10 +37,14 @@
   }
 }
 
+body {
+  background: #f8f9fb;
+}
+
 .app-container {
   display: flex;
-  height: 100vh;
-  background: #f8f9fb;
+  height: max-content;
+  /* background: #f8f9fb; */
 }
 
 .main-content {

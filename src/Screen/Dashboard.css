@@ -166,3 +166,9 @@
   font-size: 14px;
   color: var(--gray-color);
 }
+
+@media (max-width: 768px) {
+  .info .label {
+    font-size: 14px;
+  }
+}

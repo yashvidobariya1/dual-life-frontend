@@ -10,17 +10,25 @@ import Loader from "../Main/Loader";
 
 const TestRecord = () => {
   const navigate = useNavigate();
-  const [record, setrecord] = useState([]);
+  const [record, setRecord] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // pagination states
+  const [filter, setFilter] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchRecentRecords = async () => {
+      setLoading(true);
       try {
         const response = await PostCall(
-          "admin/getAllPatients?recentPatients=true"
+          `admin/getAllPatients?recentPatients=${filter}&page=${page}&limit=${pageSize}`
         );
         if (response?.success) {
-          setrecord(response.patients);
+          setRecord(response.patients);
+          setTotalPages(response.totalPages || 1); // make sure backend sends totalPages
         } else {
           console.error("Failed to fetch records:", response?.message);
         }
@@ -32,10 +40,16 @@ const TestRecord = () => {
     };
 
     fetchRecentRecords();
-  }, []);
+  }, [page, pageSize, filter]);
 
   const handleDetails = () => {
     navigate("/test-records/recorddetails");
+  };
+
+  const handleChange = (event) => {
+    const value = event.target.value === "true"; // convert to boolean
+    setFilter(value);
+    console.log("Selected:", value);
   };
 
   if (loading) {
@@ -56,6 +70,20 @@ const TestRecord = () => {
           <button className="filter-btn">Filter</button>
         </div>
       </div>
+      <div className="filter">
+        <label htmlFor="filter" className="filter-label">
+          Filter:
+        </label>
+        <select
+          id="filter"
+          value={filter.toString()}
+          onChange={handleChange}
+          className="filter-select"
+        >
+          <option value="false">All</option>
+          <option value="true">Recent</option>
+        </select>
+      </div>
 
       <div className="records-container">
         <ul>
@@ -69,7 +97,6 @@ const TestRecord = () => {
                   <RiAdminFill /> {record.name}
                 </p>
                 <p className="date">
-                  {" "}
                   <HiCalendarDateRange />{" "}
                   {record.registeredAt
                     ? moment(record.registeredAt).format("DD/MM/YYYY")
@@ -85,6 +112,37 @@ const TestRecord = () => {
           ))}
         </ul>
       </div>
+      {!filter && (
+        <div className="pagination">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((prev) => prev - 1)}
+          >
+            Prev
+          </button>
+          <span>
+            Page {page} of {totalPages}
+          </span>
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage((prev) => prev + 1)}
+          >
+            Next
+          </button>
+
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setPage(1);
+            }}
+          >
+            <option value={5}>5</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+          </select>
+        </div>
+      )}
     </div>
   );
 };

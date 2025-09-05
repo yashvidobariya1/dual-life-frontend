@@ -23,7 +23,7 @@ const Sidebar = ({ collapsed, mobileOpen, closeSidebar }) => {
       {/* Sidebar Header */}
       <div className="sidebar-header">
         <h2 className="sidebar-logo">
-          <div className="img-sidebar">
+          <div className={`img-sidebar ${collapsed ? "collapsed" : ""}`}>
             <img
               src={img1}
               alt="Logo"
@@ -66,7 +66,7 @@ const Sidebar = ({ collapsed, mobileOpen, closeSidebar }) => {
           >
             <div className="flex-sidebar">
               <FaUserShield />
-              <p>Sub-admins</p>
+              <p>Sub Admins</p>
             </div>
           </NavLink>
         </li>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./SubAdmin.css";
 import { IoCallOutline } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa6";
-import { PostCall } from "../Screen/ApiService"; // <-- your API helper
+import { PostCall } from "../Screen/ApiService";
 import moment from "moment";
 import { showToast } from "../Main/ToastManager";
 import Loader from "../Main/Loader";
@@ -16,36 +16,25 @@ const SubAdmin = () => {
   const [otp, setOtp] = useState("");
   const [refId, setRefId] = useState("");
   const [verifyResponse, setVerifyResponse] = useState([]);
-  const [filter, setFilter] = useState(false);
+  const [filter, setFilter] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // edit mode states
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editId, setEditId] = useState(null);
+
   const [formData, setFormData] = useState({
     name: "",
     aadhaar: "",
-    email: "", // 🔹 added
+    email: "",
     mobileNumber: "",
     password: "",
     confirmPassword: "",
+    dob: "",
+    gender: "",
   });
-
-  const subAdmins = [
-    {
-      name: "Rajesh Kumar",
-      phone: "+91 98765 43210",
-      tests: 245,
-      success: "94.3%",
-    },
-    {
-      name: "Priya Sharma",
-      phone: "+91 87654 32109",
-      tests: 198,
-      success: "91.2%",
-    },
-    {
-      name: "Amit Patel",
-      phone: "+91 76543 21098",
-      tests: 312,
-      success: "93.6%",
-    },
-  ];
 
   const handleFormChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -59,12 +48,18 @@ const SubAdmin = () => {
     setVerifyResponse([]);
     setFormData({
       name: "",
+      aadhaar: "",
+      email: "",
       mobileNumber: "",
       password: "",
       confirmPassword: "",
+      dob: "",
+      gender: "",
     });
     setShowModal(false);
     setLoading(false);
+    setIsEditMode(false);
+    setEditId(null);
   };
 
   const openModal = () => {
@@ -107,7 +102,7 @@ const SubAdmin = () => {
       }
     } catch (err) {
       console.error(err);
-      showToast("Error generating OTP", "erorr");
+      showToast("Error generating OTP", "error");
     } finally {
       setLoading(false);
     }
@@ -126,8 +121,6 @@ const SubAdmin = () => {
         aadhaarNumber: aadhaar,
       });
 
-      console.log("OTP verify response:", res);
-
       if (res?.success) {
         setVerifyResponse(res.kycData);
 
@@ -138,8 +131,8 @@ const SubAdmin = () => {
           mobileNumber: "",
           password: "",
           confirmPassword: "",
-          kycDataId: res?.kycData?._id,
           dob: res?.kycData?.dob,
+          gender: res?.kycData?.gender,
         });
 
         setStep(2);
@@ -157,8 +150,46 @@ const SubAdmin = () => {
   };
 
   const handleChange = (event) => {
-    setFilter(event.target.value);
-    console.log("Selected:", event.target.value);
+    const value = event.target.value === "true"; // convert to boolean
+    setFilter(value);
+  };
+
+  const handleEdit = async (id) => {
+    try {
+      setLoading(true);
+      setIsEditMode(true);
+      setEditId(id);
+      setShowModal(true);
+      setStep(2); // jump directly to form
+
+      const res = await PostCall(`profile/${id}`);
+      if (res?.success) {
+        setFormData({
+          name: res?.data?.name || "",
+          aadhaar: res?.data?.aadhaarNumber || "",
+          email: res?.data?.email || "",
+          mobileNumber: res?.data?.phone || "",
+          password: "",
+          confirmPassword: "",
+          dob: res?.data?.dob || "",
+          gender: res?.data?.gender || "",
+        });
+
+        setVerifyResponse({
+          dob: res?.data?.dob,
+          gender: res?.data?.gender,
+          name: res?.data?.name,
+        });
+      } else {
+        showToast(res?.message || "Failed to fetch profile", "error");
+        setShowModal(false);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Error fetching profile", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -168,23 +199,35 @@ const SubAdmin = () => {
       showToast("Passwords do not match!", "error");
       return;
     }
+
     const body = {
-      aadhaarNumber: aadhaar,
-      name: verifyResponse?.name,
+      aadhaarNumber: formData.aadhaar,
+      name: formData.name,
       email: formData.email,
       phone: formData.mobileNumber,
       password: formData.password,
-      kycDataId: verifyResponse?.address?._id,
-      dob: verifyResponse?.dob,
+      dob: formData.dob,
+      gender: formData.gender,
     };
+
     try {
-      const res = await PostCall("auth/register-subadmin", body);
+      let res;
+      if (isEditMode) {
+        res = await PostCall(`superadmin/edit-submit/${editId}`, body);
+      } else {
+        res = await PostCall("auth/register-subadmin", body);
+      }
 
       if (res?.success) {
-        showToast("Sub-admin registered successfully!", "success");
+        showToast(
+          isEditMode
+            ? "Sub-admin updated successfully!"
+            : "Sub-admin registered successfully!",
+          "success"
+        );
         resetAll();
       } else {
-        showToast(res?.message || "Failed to register Sub-admin", "error");
+        showToast(res?.message || "Failed to save Sub-admin", "error");
       }
     } catch (err) {
       console.error(err);
@@ -196,10 +239,11 @@ const SubAdmin = () => {
       try {
         setLoading(true);
         const response = await PostCall(
-          `admin/getAllSubAdmins?recentSubAdmins=${filter}`
+          `admin/getAllSubAdmins?recentSubAdmins=${filter}&page=${page}&limit=${pageSize}`
         );
         if (response?.success) {
           setsubadminData(response.subAdmins);
+          setTotalPages(response.totalPages || 1);
         } else {
           console.error("Failed to fetch records:", response?.message);
         }
@@ -211,7 +255,7 @@ const SubAdmin = () => {
     };
 
     fetchRecentRecords();
-  }, [filter]);
+  }, [page, pageSize, filter]);
 
   if (loading) {
     return <Loader />;
@@ -225,21 +269,33 @@ const SubAdmin = () => {
           Add New Sub-admin
         </button>
       </div>
+      <div className="filter">
+        <label htmlFor="filter" className="filter-label">
+          Filter:
+        </label>
+        <select
+          id="filter"
+          value={filter.toString()}
+          onChange={handleChange}
+          className="filter-select"
+        >
+          <option value="false">All</option>
+          <option value="true">Recent</option>
+        </select>
+      </div>
 
       <div className="list-container">
-        <div className="filter">
-          <label>Filter: </label>
-          <select id="filter" value={filter} onChange={handleChange}>
-            <option value="false">All</option>
-            <option value="true">Recent</option>
-          </select>
-        </div>
         {subadminData.map((admin, index) => (
           <div key={index} className="list-item">
             <div className="list-header">
               <p className="admin-name">{admin.name}</p>
               <div className="actions">
-                <button className="btn edit-btn">Edit</button>
+                <button
+                  className="btn edit-btn"
+                  onClick={() => handleEdit(admin._id)}
+                >
+                  Edit
+                </button>
                 <button className="btn deactivate-btn">Deactivate</button>
               </div>
             </div>
@@ -260,7 +316,8 @@ const SubAdmin = () => {
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
-            {step === 0 && (
+            {/* Aadhaar Flow */}
+            {!isEditMode && step === 0 && (
               <>
                 <h3>Enter Aadhaar Number</h3>
                 <input
@@ -288,7 +345,7 @@ const SubAdmin = () => {
               </>
             )}
 
-            {step === 1 && (
+            {!isEditMode && step === 1 && (
               <>
                 <h3>Enter OTP</h3>
                 <input
@@ -323,11 +380,12 @@ const SubAdmin = () => {
               </>
             )}
 
+            {/* Add/Edit Form */}
             {step === 2 && (
               <>
-                <h3>Add New Sub-admin</h3>
+                <h3>{isEditMode ? "Edit Sub-admin" : "Add New Sub-admin"}</h3>
                 <form onSubmit={handleSubmit} className="modal-form">
-                  {/* Aadhaar (read-only) */}
+                  {/* Aadhaar */}
                   <input
                     type="text"
                     name="aadhaar"
@@ -335,15 +393,15 @@ const SubAdmin = () => {
                     readOnly
                   />
 
-                  {/* Name (read-only) */}
+                  {/* Name */}
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
-                    readOnly
+                    readOnly={!isEditMode ? true : false}
                   />
 
-                  {/* Email (editable) */}
+                  {/* Email */}
                   <input
                     type="email"
                     name="email"
@@ -353,7 +411,7 @@ const SubAdmin = () => {
                     required
                   />
 
-                  {/* Mobile (editable) */}
+                  {/* Mobile */}
                   <input
                     type="text"
                     name="mobileNumber"
@@ -363,55 +421,55 @@ const SubAdmin = () => {
                     required
                   />
 
-                  {/* DOB (read-only) */}
+                  {/* DOB */}
                   <input
                     type="date"
                     name="dob"
                     value={
-                      verifyResponse.dob
-                        ? moment(verifyResponse.dob).format("YYYY-MM-DD")
+                      formData.dob
+                        ? moment(formData.dob).format("YYYY-MM-DD")
                         : ""
                     }
                     readOnly
                   />
 
-                  {/* Gender (read-only) */}
+                  {/* Gender */}
                   <input
                     type="text"
                     name="gender"
                     value={
-                      verifyResponse?.gender === "M"
+                      formData.gender === "M"
                         ? "Male"
-                        : verifyResponse?.gender === "F"
+                        : formData.gender === "F"
                         ? "Female"
-                        : ""
+                        : formData.gender
                     }
                     readOnly
                   />
 
-                  {/* Password (editable) */}
+                  {/* Password */}
                   <input
                     type="password"
                     name="password"
                     placeholder="Enter Password"
                     value={formData.password}
                     onChange={handleFormChange}
-                    required
+                    required={!isEditMode}
                   />
 
-                  {/* Confirm Password (editable) */}
+                  {/* Confirm Password */}
                   <input
                     type="password"
                     name="confirmPassword"
                     placeholder="Confirm Password"
                     value={formData.confirmPassword}
                     onChange={handleFormChange}
-                    required
+                    required={!isEditMode}
                   />
 
                   <div className="modal-actions">
                     <button type="submit" className="btn save-btn">
-                      Save
+                      {isEditMode ? "Update" : "Save"}
                     </button>
                     <button
                       type="button"
@@ -425,6 +483,38 @@ const SubAdmin = () => {
               </>
             )}
           </div>
+        </div>
+      )}
+
+      {!filter && (
+        <div className="pagination">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((prev) => prev - 1)}
+          >
+            Prev
+          </button>
+          <span>
+            Page {page} of {totalPages}
+          </span>
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage((prev) => prev + 1)}
+          >
+            Next
+          </button>
+
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setPage(1);
+            }}
+          >
+            <option value={5}>5</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+          </select>
         </div>
       )}
     </div>

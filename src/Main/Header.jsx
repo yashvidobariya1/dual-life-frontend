@@ -45,7 +45,7 @@ const Header = ({ toggleSidebar }) => {
   };
 
   return (
-    <header className="header">
+    <header className="main-header">
       <div className="header-toggle-menu">
         <IoMdMenu
           onClick={toggleSidebar}

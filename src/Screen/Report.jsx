@@ -37,8 +37,8 @@ const Report = () => {
 
   return (
     <div id="test-records-view" className="test-records">
-      <div className="reacord-header">
-        <h2>Test Record Management</h2>
+      <div className="header">
+        <h2>Record Management</h2>
         <div className="actions">
           <div className="search-box">
             <input type="text" placeholder="Search Aadhaar" />

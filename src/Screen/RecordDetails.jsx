@@ -68,7 +68,7 @@ const RecordDetails = () => {
         </div>
 
         {/* Test Data */}
-        <div className="card-header">Test Data</div>
+        <div className="card-header test-data">Test Data</div>
         <div className="card-body">
           <div className="grid three-cols">
             <div className="field">
@@ -93,19 +93,19 @@ const RecordDetails = () => {
         {/* Footer */}
         <div className="card-footer">
           <div>
-            <p className="status">
+            {/* <p className="status">
               <span>Status:</span>
               <span className="badge pending">Pending</span>
-            </p>
+            </p> */}
             <p className="submitted">
               Submitted by: Priya Sharma on Jan 6, 2023
             </p>
           </div>
-          <div className="actions">
+          {/* <div className="actions">
             <button className="btn btn-approve">Approve</button>
             <button className="btn btn-reject">Reject</button>
             <button className="btn btn-pending">Set Pending</button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

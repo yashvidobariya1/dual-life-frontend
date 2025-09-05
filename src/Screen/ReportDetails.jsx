@@ -68,7 +68,7 @@ const ReportDetails = () => {
         </div>
 
         {/* Test Data */}
-        <div className="card-header">Test Data</div>
+        <div className="card-header test-data">Test Data</div>
         <div className="card-body">
           <div className="grid three-cols">
             <div className="field">

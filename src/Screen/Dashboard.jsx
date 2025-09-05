@@ -23,19 +23,19 @@ const Dashboard = () => {
       icon: <IoMdCheckmarkCircleOutline />,
     },
     {
-      label: "Active Sub-admins",
+      label: "Sub Admins Counts",
       value: "42",
       color: "green",
       icon: <HiMiniUsers />,
     },
     {
-      label: "Success Rate",
+      label: "Admin Kits Available",
       value: "92.5%",
       color: "orange",
       icon: <FaChartSimple />,
     },
     {
-      label: "Pending Tests",
+      label: "total Kits Available",
       value: "78",
       color: "red",
       icon: <IoIosHourglass />,
