@@ -120,7 +120,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--black-color);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -165,8 +165,13 @@
 
 .modal input {
   width: calc(100% - 30px);
-  margin: 20px 0;
+  margin: 4px 0px 10px 0px;
   padding: 10px 15px;
+}
+
+.modal-form label {
+  font-size: 16px;
+  font-weight: 700;
 }
 
 filter #filter {

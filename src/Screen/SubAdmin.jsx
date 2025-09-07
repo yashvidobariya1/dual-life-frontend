@@ -162,23 +162,25 @@ const SubAdmin = () => {
       setShowModal(true);
       setStep(2); // jump directly to form
 
-      const res = await PostCall(`profile/${id}`);
+      const res = await PostCall(`admin/GetSubAdminById/${id}`);
       if (res?.success) {
+        const admin = res?.subAdmin || res?.data; // adjust depending on backend
+
         setFormData({
-          name: res?.data?.name || "",
-          aadhaar: res?.data?.aadhaarNumber || "",
-          email: res?.data?.email || "",
-          mobileNumber: res?.data?.phone || "",
-          password: "",
-          confirmPassword: "",
-          dob: res?.data?.dob || "",
-          gender: res?.data?.gender || "",
+          name: admin?.name || "",
+          aadhaar: admin?.aadhaarNumber || "",
+          email: admin?.email || "",
+          mobileNumber: admin?.phone || "",
+          password: admin?.password || "",
+          confirmPassword: admin?.confirmPassword || "",
+          dob: admin?.dob || "", // if your API has dob
+          gender: admin?.gender || "", // if your API has gender
         });
 
         setVerifyResponse({
-          dob: res?.data?.dob,
-          gender: res?.data?.gender,
-          name: res?.data?.name,
+          dob: admin?.dob || "",
+          gender: admin?.gender || "",
+          name: admin?.name || "",
         });
       } else {
         showToast(res?.message || "Failed to fetch profile", "error");
@@ -213,7 +215,7 @@ const SubAdmin = () => {
     try {
       let res;
       if (isEditMode) {
-        res = await PostCall(`superadmin/edit-submit/${editId}`, body);
+        res = await PostCall(`admin/updateAdminInventory`, body);
       } else {
         res = await PostCall("auth/register-subadmin", body);
       }
@@ -386,6 +388,7 @@ const SubAdmin = () => {
                 <h3>{isEditMode ? "Edit Sub-admin" : "Add New Sub-admin"}</h3>
                 <form onSubmit={handleSubmit} className="modal-form">
                   {/* Aadhaar */}
+                  <label>Addhar Number</label>
                   <input
                     type="text"
                     name="aadhaar"
@@ -394,6 +397,7 @@ const SubAdmin = () => {
                   />
 
                   {/* Name */}
+                  <label>Name</label>
                   <input
                     type="text"
                     name="name"
@@ -402,6 +406,7 @@ const SubAdmin = () => {
                   />
 
                   {/* Email */}
+                  <label>Email</label>
                   <input
                     type="email"
                     name="email"
@@ -412,6 +417,7 @@ const SubAdmin = () => {
                   />
 
                   {/* Mobile */}
+                  <label>Mobile Number</label>
                   <input
                     type="text"
                     name="mobileNumber"
@@ -422,11 +428,12 @@ const SubAdmin = () => {
                   />
 
                   {/* DOB */}
+                  <label>Date Of Birth</label>
                   <input
                     type="date"
                     name="dob"
                     value={
-                      formData.dob
+                      formData?.dob
                         ? moment(formData.dob).format("YYYY-MM-DD")
                         : ""
                     }
@@ -434,6 +441,7 @@ const SubAdmin = () => {
                   />
 
                   {/* Gender */}
+                  <label>Gender</label>
                   <input
                     type="text"
                     name="gender"
@@ -448,6 +456,7 @@ const SubAdmin = () => {
                   />
 
                   {/* Password */}
+                  <label>Password</label>
                   <input
                     type="password"
                     name="password"
@@ -458,6 +467,7 @@ const SubAdmin = () => {
                   />
 
                   {/* Confirm Password */}
+                  <label>Confirm Passwors</label>
                   <input
                     type="password"
                     name="confirmPassword"

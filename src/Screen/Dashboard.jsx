@@ -7,61 +7,14 @@ import { FaChartSimple, FaUserClock } from "react-icons/fa6";
 import { RiAdminFill } from "react-icons/ri";
 import { TbFileReport } from "react-icons/tb";
 import { HiCalendarDateRange } from "react-icons/hi2";
-import { PostCall } from "./ApiService";
+import { GetCall, PostCall } from "./ApiService";
 import moment from "moment";
 import Loader from "../Main/Loader";
 
 const Dashboard = () => {
   const [recentRecords, setRecentRecords] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const stats = [
-    {
-      label: "Total Tests",
-      value: "2,345",
-      color: "blue",
-      icon: <IoMdCheckmarkCircleOutline />,
-    },
-    {
-      label: "Sub Admins Counts",
-      value: "42",
-      color: "green",
-      icon: <HiMiniUsers />,
-    },
-    {
-      label: "Admin Kits Available",
-      value: "92.5%",
-      color: "orange",
-      icon: <FaChartSimple />,
-    },
-    {
-      label: "total Kits Available",
-      value: "78",
-      color: "red",
-      icon: <IoIosHourglass />,
-    },
-  ];
-
-  const quickActions = [
-    {
-      title: "Add Sub-admin",
-      subtitle: "Register new sub-admin",
-      color: "blue",
-      icon: <RiAdminFill />,
-    },
-    {
-      title: "View All Test Records",
-      subtitle: "Browse all test results",
-      color: "green",
-      icon: <FaUserClock />,
-    },
-    {
-      title: "View Daily Report",
-      subtitle: "Generate daily summary",
-      color: "purple",
-      icon: <TbFileReport />,
-    },
-  ];
+  const [dashboardData, setDashboardData] = useState(null);
 
   useEffect(() => {
     const fetchRecentRecords = async () => {
@@ -85,9 +38,79 @@ const Dashboard = () => {
     fetchRecentRecords();
   }, []);
 
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const response = await GetCall("admin/getAdminDashboardStats");
+        if (response?.success) {
+          setDashboardData(response.data); // ✅ use response.data instead of patients
+        } else {
+          console.error("Failed to fetch dashboard data:", response?.message);
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
   if (loading) {
     return <Loader />;
   }
+
+  const stats = dashboardData
+    ? [
+        {
+          label: "Total Tests",
+          value: dashboardData.totalTests,
+          color: "blue",
+          icon: <IoMdCheckmarkCircleOutline />,
+        },
+        {
+          label: "Sub Admins Counts",
+          value: dashboardData.subAdminCount,
+          color: "green",
+          icon: <HiMiniUsers />,
+        },
+        {
+          label: "Admin Kits Available",
+          value: dashboardData.adminKitsAvailable,
+          color: "orange",
+          icon: <FaChartSimple />,
+        },
+        {
+          label: "Total Kits Available",
+          value: dashboardData.totalKitsAvailable,
+          color: "red",
+          icon: <IoIosHourglass />,
+        },
+      ]
+    : [];
+
+  const quickActions = [
+    {
+      title: "Add Sub-admin",
+      subtitle: "Register new sub-admin",
+      color: "blue",
+      icon: <RiAdminFill />,
+    },
+    {
+      title: "View All Test Records",
+      subtitle: "Browse all test results",
+      color: "green",
+      icon: <FaUserClock />,
+    },
+    {
+      title: "View Daily Report",
+      subtitle: "Generate daily summary",
+      color: "purple",
+      icon: <TbFileReport />,
+    },
+  ];
 
   return (
     <div className="dashboard">

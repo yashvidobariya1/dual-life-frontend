@@ -108,9 +108,11 @@
 .title-dashboard {
   font-weight: bold;
   font-size: 14px;
+  margin: 6px 0;
 }
 .subtitle {
   font-size: 13px;
+  margin: 4px 0;
   color: var(--gray-color);
 }
 
@@ -165,6 +167,10 @@
   margin-top: 8px;
   font-size: 14px;
   color: var(--gray-color);
+}
+
+.dashboard-content {
+  text-align: left;
 }
 
 @media (max-width: 768px) {

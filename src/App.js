@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 import "./App.css";
 import Sidebar from "./Main/SideBar";
@@ -135,7 +130,7 @@ function App() {
             }
           />
           <Route
-            path="/test-records/recorddetails"
+            path="/test-records/recorddetails/:id"
             element={
               <ProtectedRoute>
                 <RecordDetails />

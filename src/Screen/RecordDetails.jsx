@@ -1,8 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./RecordDetails.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { PostCall } from "./ApiService";
 
 const RecordDetails = () => {
+  const { id } = useParams();
+  const [recordDetails, setrecordDetials] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRecentRecords = async () => {
+      try {
+        setLoading(true);
+        const response = await PostCall(`admim/getPatientById/${id}`);
+        if (response?.success) {
+          setrecordDetials(response.data);
+        } else {
+          console.error("Failed to fetch records:", response?.message);
+        }
+      } catch (error) {
+        console.error("Error fetching recent patients:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecentRecords();
+  }, []);
+
   const navigate = useNavigate();
   return (
     <div id="test-details-view" className="test-details-container">

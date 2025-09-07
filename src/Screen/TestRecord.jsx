@@ -42,8 +42,8 @@ const TestRecord = () => {
     fetchRecentRecords();
   }, [page, pageSize, filter]);
 
-  const handleDetails = () => {
-    navigate("/test-records/recorddetails");
+  const handleDetails = (id) => {
+    navigate(`/test-records/recorddetails/${id}`);
   };
 
   const handleChange = (event) => {
@@ -104,7 +104,7 @@ const TestRecord = () => {
                 </p>
               </div>
               <div className="record-footer">
-                <button className="view-btn" onClick={handleDetails}>
+                <button className="view-btn" onClick={handleDetails(record._id)}>
                   View Details
                 </button>
               </div>
