@@ -1,44 +1,65 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Report.css";
-import { HiCalendarDateRange } from "react-icons/hi2";
-import { RiAdminFill } from "react-icons/ri";
-import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { RiAdminFill } from "react-icons/ri";
+import { HiCalendarDateRange } from "react-icons/hi2";
+import { FaSearch } from "react-icons/fa";
+import moment from "moment";
+import { GetCall, PostCall } from "./ApiService";
+import Loader from "../Main/Loader";
 
 const Report = () => {
   const navigate = useNavigate();
-  const records = [
-    {
-      aadhaar: "XXXX-XXXX-7890",
-      status: "Approved",
-      statusClass: "approved",
-      subAdmin: "Rajesh Kumar",
-      date: "Jan 7, 2023",
-    },
-    {
-      aadhaar: "XXXX-XXXX-4567",
-      status: "Pending",
-      statusClass: "pending",
-      subAdmin: "Priya Sharma",
-      date: "Jan 6, 2023",
-    },
-    {
-      aadhaar: "XXXX-XXXX-1234",
-      status: "Rejected",
-      statusClass: "rejected",
-      subAdmin: "Amit Patel",
-      date: "Jan 5, 2023",
-    },
-  ];
+  const [record, setRecord] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleDetails = () => {
-    navigate("/reports/reportdetails");
+  // pagination states
+  const [filter, setFilter] = useState(true);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    const fetchRecentRecords = async () => {
+      setLoading(true);
+      try {
+        const response = await GetCall(
+          `admin/getAllReports?recentReports=${filter}&page=${page}&limit=${pageSize}`
+        );
+        if (response?.success) {
+          setRecord(response.reports.patient);
+          setTotalPages(response.totalPages || 1); // make sure backend sends totalPages
+        } else {
+          console.error("Failed to fetch records:", response?.message);
+        }
+      } catch (error) {
+        console.error("Error fetching recent patients:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecentRecords();
+  }, [page, pageSize, filter]);
+
+  const handleDetails = (id) => {
+    navigate(`/test-records/recorddetails/${id}`);
   };
+
+  const handleChange = (event) => {
+    const value = event.target.value === "true"; // convert to boolean
+    setFilter(value);
+    console.log("Selected:", value);
+  };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div id="test-records-view" className="test-records">
       <div className="header">
-        <h2>Record Management</h2>
+        <h2>Test Record Management</h2>
         <div className="actions">
           <div className="search-box">
             <input type="text" placeholder="Search Aadhaar" />
@@ -46,30 +67,50 @@ const Report = () => {
               <FaSearch />
             </span>
           </div>
-          <button className="filter-btn">Filter</button>
+          <button className="filter-btn">Search</button>
+        </div>
+      </div>
+      <div className="filter">
+        <div className="filter-subadmin"></div>
+        <div className="filter-subadmin">
+          <label htmlFor="filter" className="filter-label">
+            Filter:{" "}
+          </label>
+          <select
+            id="filter"
+            value={filter.toString()}
+            onChange={handleChange}
+            className="filter-select"
+          >
+            <option value="false">All</option>
+            <option value="true">Recent</option>
+          </select>
         </div>
       </div>
 
       <div className="records-container">
         <ul>
-          {records.map((record, index) => (
+          {record?.map((record, index) => (
             <li key={index} className="record-item">
               <div className="record-header">
-                <p className="aadhaar">Aadhaar: {record.aadhaar}</p>
-                {/* <span className={`status ${record.statusClass}`}>
-                  {record.status}
-                </span> */}
+                <p className="aadhaar">Aadhaar: {record.aadhaarNumber}</p>
               </div>
               <div className="record-info">
                 <p className="sub-admin">
-                  <RiAdminFill /> Sub-admin: {record.subAdmin}
+                  <RiAdminFill /> {record.name}
                 </p>
                 <p className="date">
-                  <HiCalendarDateRange /> {record.date}
+                  <HiCalendarDateRange />{" "}
+                  {record.registeredAt
+                    ? moment(record.registeredAt).format("DD/MM/YYYY")
+                    : "N/A"}
                 </p>
               </div>
               <div className="record-footer">
-                <button className="view-btn" onClick={handleDetails}>
+                <button
+                  className="view-btn"
+                  onClick={() => handleDetails(record._id)}
+                >
                   View Details
                 </button>
               </div>
@@ -77,6 +118,37 @@ const Report = () => {
           ))}
         </ul>
       </div>
+      {!filter && (
+        <div className="pagination">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((prev) => prev - 1)}
+          >
+            Prev
+          </button>
+          <span>
+            Page {page} of {totalPages}
+          </span>
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage((prev) => prev + 1)}
+          >
+            Next
+          </button>
+
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setPage(1);
+            }}
+          >
+            <option value={5}>5</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+          </select>
+        </div>
+      )}
     </div>
   );
 };

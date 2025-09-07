@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import "./SubAdmin.css";
 import { IoCallOutline } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa6";
-import { PostCall } from "../Screen/ApiService";
+import { PostCall, PutCall } from "../Screen/ApiService";
 import moment from "moment";
 import { showToast } from "../Main/ToastManager";
 import Loader from "../Main/Loader";
+import { FaSearch } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const SubAdmin = () => {
-  const [step, setStep] = useState(0); // 0 = Aadhaar, 1 = OTP, 2 = Form
+  const [step, setStep] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [subadminData, setsubadminData] = useState([]);
@@ -20,20 +22,25 @@ const SubAdmin = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchAadhaar, setSearchAadhaar] = useState("");
 
   // edit mode states
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
 
+  const togglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
   const [formData, setFormData] = useState({
     name: "",
     aadhaar: "",
     email: "",
     mobileNumber: "",
     password: "",
-    confirmPassword: "",
+    // confirmPassword: "",
     dob: "",
-    gender: "",
+    // gender: "",
   });
 
   const handleFormChange = (e) => {
@@ -52,9 +59,9 @@ const SubAdmin = () => {
       email: "",
       mobileNumber: "",
       password: "",
-      confirmPassword: "",
+      // confirmPassword: "",
       dob: "",
-      gender: "",
+      // gender: "",
     });
     setShowModal(false);
     setLoading(false);
@@ -68,14 +75,39 @@ const SubAdmin = () => {
     setStep(0);
   };
 
+  // const handleSearch = async () => {
+  //   if (!searchAadhaar || searchAadhaar.length !== 12) {
+  //     showToast("Enter valid 12-digit Aadhaar number", "error");
+  //     return;
+  //   }
+  //   try {
+  //     setLoading(true);
+  //     const res = await PostCall(
+  //       `admin/getAllSubAdmins?aadhaarNumber=${searchAadhaar}`
+  //     );
+  //     if (res?.success) {
+  //       setsubadminData(res.subAdmins || []);
+  //       setTotalPages(1); // single result, so no pagination
+  //     } else {
+  //       showToast(res?.message || "No record found", "error");
+  //       setsubadminData([]);
+  //     }
+  //   } catch (err) {
+  //     console.error("Search error:", err);
+  //     showToast("Error searching Aadhaar", "error");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const goBack = () => {
     if (step === 1) {
       setOtp("");
       setRefId("");
     }
-    if (step === 2) {
-      setFormData((p) => ({ ...p, password: "", confirmPassword: "" }));
-    }
+    // if (step === 2) {
+    //   setFormData((p) => ({ ...p, password: "", confirmPassword: "" }));
+    // }
     setStep((s) => Math.max(0, s - 1));
   };
 
@@ -130,9 +162,9 @@ const SubAdmin = () => {
           email: "",
           mobileNumber: "",
           password: "",
-          confirmPassword: "",
+          // confirmPassword: "",
           dob: res?.kycData?.dob,
-          gender: res?.kycData?.gender,
+          // gender: res?.kycData?.gender,
         });
 
         setStep(2);
@@ -164,23 +196,23 @@ const SubAdmin = () => {
 
       const res = await PostCall(`admin/GetSubAdminById/${id}`);
       if (res?.success) {
-        const admin = res?.subAdmin || res?.data; // adjust depending on backend
+        const subAdminData = res.subAdmin?.subAdmin || {};
+        const dob = subAdminData.kycDataId?.dob || res.subAdmin?.dob || "";
 
         setFormData({
-          name: admin?.name || "",
-          aadhaar: admin?.aadhaarNumber || "",
-          email: admin?.email || "",
-          mobileNumber: admin?.phone || "",
-          password: admin?.password || "",
-          confirmPassword: admin?.confirmPassword || "",
-          dob: admin?.dob || "", // if your API has dob
-          gender: admin?.gender || "", // if your API has gender
+          name: subAdminData.name || "",
+          aadhaar: subAdminData.aadhaarNumber || "",
+          email: subAdminData.email || "",
+          mobileNumber: subAdminData.phone || "",
+          password: subAdminData.password || "",
+          // confirmPassword: subAdminData.password || "", // usually confirm = password
+          dob: dob ? dob.split("T")[0] : "", // format yyyy-mm-dd for input[type=date]
+          // gender: subAdminData.gender || "",
         });
-
         setVerifyResponse({
-          dob: admin?.dob || "",
-          gender: admin?.gender || "",
-          name: admin?.name || "",
+          dob: subAdminData?.dob || "",
+          // gender: subAdminData?.gender || "",
+          name: subAdminData?.name || "",
         });
       } else {
         showToast(res?.message || "Failed to fetch profile", "error");
@@ -197,10 +229,10 @@ const SubAdmin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      showToast("Passwords do not match!", "error");
-      return;
-    }
+    // if (formData.password !== formData.confirmPassword) {
+    //   showToast("Passwords do not match!", "error");
+    //   return;
+    // }
 
     const body = {
       aadhaarNumber: formData.aadhaar,
@@ -209,7 +241,7 @@ const SubAdmin = () => {
       phone: formData.mobileNumber,
       password: formData.password,
       dob: formData.dob,
-      gender: formData.gender,
+      // gender: formData.gender,
     };
 
     try {
@@ -236,28 +268,48 @@ const SubAdmin = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchRecentRecords = async () => {
-      try {
-        setLoading(true);
-        const response = await PostCall(
-          `admin/getAllSubAdmins?recentSubAdmins=${filter}&page=${page}&limit=${pageSize}`
-        );
-        if (response?.success) {
-          setsubadminData(response.subAdmins);
-          setTotalPages(response.totalPages || 1);
-        } else {
-          console.error("Failed to fetch records:", response?.message);
-        }
-      } catch (error) {
-        console.error("Error fetching recent patients:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const handleToggleActive = async (id, currentStatus) => {
+    try {
+      setLoading(true);
+      const body = { isActive: !currentStatus }; // flip the status
+      const res = await PutCall(`admin/toggleSubAdmin/${id}`, body);
 
+      if (res?.success) {
+        showToast(res.message, "success");
+        fetchRecentRecords();
+      } else {
+        showToast(res?.message || "Failed to update status", "success");
+      }
+    } catch (err) {
+      console.error("Error toggling subadmin status:", err);
+      showToast("Something went wrong!", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchRecentRecords = async () => {
+    try {
+      setLoading(true);
+      const response = await PostCall(
+        `admin/getAllSubAdmins?recentSubAdmins=${filter}&page=${page}&limit=${pageSize}&search=${searchAadhaar}`
+      );
+      if (response?.success) {
+        setsubadminData(response.subAdmins);
+        setTotalPages(response.totalPages || 1);
+      } else {
+        console.error("Failed to fetch records:", response?.message);
+      }
+    } catch (error) {
+      console.error("Error fetching recent patients:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchRecentRecords();
-  }, [page, pageSize, filter]);
+  }, [page, pageSize, filter, searchAadhaar]);
 
   if (loading) {
     return <Loader />;
@@ -266,24 +318,46 @@ const SubAdmin = () => {
   return (
     <div id="subadmin-view" className="subadmin-container">
       <div className="header">
-        <h2 className="title">Sub-admin Management</h2>
+        <h2 className="title-header">Sub Admin Management</h2>
         <button className="add-btn" onClick={openModal}>
-          Add New Sub-admin
+          Add New Sub Admin
         </button>
       </div>
       <div className="filter">
-        <label htmlFor="filter" className="filter-label">
-          Filter:
-        </label>
-        <select
-          id="filter"
-          value={filter.toString()}
-          onChange={handleChange}
-          className="filter-select"
-        >
-          <option value="false">All</option>
-          <option value="true">Recent</option>
-        </select>
+        <div className="actions">
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Search Aadhaar"
+              value={searchAadhaar}
+              onChange={(e) =>
+                setSearchAadhaar(e.target.value.replace(/\D/g, "").slice(0, 12))
+              }
+              maxLength={12}
+              // inputMode="numeric"
+            />
+            <span className="search-icon">
+              <FaSearch />
+            </span>
+          </div>
+          {/* <button className="filter-btn" onClick={fetchRecentRecords}>
+            Search
+          </button> */}
+        </div>
+        <div className="filter-subadmin">
+          <label htmlFor="filter" className="filter-label">
+            Filter :
+          </label>
+          <select
+            id="filter"
+            value={filter.toString()}
+            onChange={handleChange}
+            className="filter-select"
+          >
+            <option value="false">All</option>
+            <option value="true">Recent</option>
+          </select>
+        </div>
       </div>
 
       <div className="list-container">
@@ -298,7 +372,14 @@ const SubAdmin = () => {
                 >
                   Edit
                 </button>
-                <button className="btn deactivate-btn">Deactivate</button>
+                <button
+                  className={`btn ${
+                    admin.isActive ? "deactivate-btn" : "activate-btn"
+                  }`}
+                  onClick={() => handleToggleActive(admin._id, admin.isActive)}
+                >
+                  {admin.isActive ? "Deactivate" : "Activate"}
+                </button>
               </div>
             </div>
 
@@ -385,7 +466,7 @@ const SubAdmin = () => {
             {/* Add/Edit Form */}
             {step === 2 && (
               <>
-                <h3>{isEditMode ? "Edit Sub-admin" : "Add New Sub-admin"}</h3>
+                <h3>{isEditMode ? "Edit Sub Admin" : "Add New Sub Admin"}</h3>
                 <form onSubmit={handleSubmit} className="modal-form">
                   {/* Aadhaar */}
                   <label>Addhar Number</label>
@@ -440,43 +521,33 @@ const SubAdmin = () => {
                     readOnly
                   />
 
-                  {/* Gender */}
-                  <label>Gender</label>
-                  <input
-                    type="text"
-                    name="gender"
-                    value={
-                      formData.gender === "M"
-                        ? "Male"
-                        : formData.gender === "F"
-                        ? "Female"
-                        : formData.gender
-                    }
-                    readOnly
-                  />
-
                   {/* Password */}
-                  <label>Password</label>
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="Enter Password"
-                    value={formData.password}
-                    onChange={handleFormChange}
-                    required={!isEditMode}
-                  />
-
-                  {/* Confirm Password */}
-                  <label>Confirm Passwors</label>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="Confirm Password"
-                    value={formData.confirmPassword}
-                    onChange={handleFormChange}
-                    required={!isEditMode}
-                  />
-
+                  <div
+                    className="password-input-wrapper"
+                    style={{ position: "relative" }}
+                  >
+                    <label>Password</label>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      placeholder="Enter Password"
+                      value={formData.password}
+                      onChange={handleFormChange}
+                      required={!isEditMode}
+                    />
+                    <span
+                      onClick={togglePassword}
+                      style={{
+                        position: "absolute",
+                        right: "15px",
+                        top: "65%",
+                        transform: "translateY(-50%)",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
                   <div className="modal-actions">
                     <button type="submit" className="btn save-btn">
                       {isEditMode ? "Update" : "Save"}

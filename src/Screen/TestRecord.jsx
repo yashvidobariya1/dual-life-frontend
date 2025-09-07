@@ -67,22 +67,25 @@ const TestRecord = () => {
               <FaSearch />
             </span>
           </div>
-          <button className="filter-btn">Filter</button>
+          <button className="filter-btn">Search</button>
         </div>
       </div>
       <div className="filter">
-        <label htmlFor="filter" className="filter-label">
-          Filter:
-        </label>
-        <select
-          id="filter"
-          value={filter.toString()}
-          onChange={handleChange}
-          className="filter-select"
-        >
-          <option value="false">All</option>
-          <option value="true">Recent</option>
-        </select>
+        <div className="filter-subadmin"></div>
+        <div className="filter-subadmin">
+          <label htmlFor="filter" className="filter-label">
+            Filter:{" "}
+          </label>
+          <select
+            id="filter"
+            value={filter.toString()}
+            onChange={handleChange}
+            className="filter-select"
+          >
+            <option value="false">All</option>
+            <option value="true">Recent</option>
+          </select>
+        </div>
       </div>
 
       <div className="records-container">
@@ -100,11 +103,14 @@ const TestRecord = () => {
                   <HiCalendarDateRange />{" "}
                   {record.registeredAt
                     ? moment(record.registeredAt).format("DD/MM/YYYY")
-                    : "N/A"}
+                    : "-"}
                 </p>
               </div>
               <div className="record-footer">
-                <button className="view-btn" onClick={handleDetails(record._id)}>
+                <button
+                  className="view-btn"
+                  onClick={() => handleDetails(record._id)}
+                >
                   View Details
                 </button>
               </div>

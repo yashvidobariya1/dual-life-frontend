@@ -2,33 +2,38 @@ import React, { useEffect, useState } from "react";
 import "./RecordDetails.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { PostCall } from "./ApiService";
+import Loader from "../Main/Loader";
 
 const RecordDetails = () => {
   const { id } = useParams();
-  const [recordDetails, setrecordDetials] = useState([]);
+  const [recordDetails, setRecordDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchRecentRecords = async () => {
+    const fetchPatientDetails = async () => {
       try {
         setLoading(true);
-        const response = await PostCall(`admim/getPatientById/${id}`);
+        const response = await PostCall(`admin/getPatientById/${id}`);
         if (response?.success) {
-          setrecordDetials(response.data);
+          setRecordDetails(response.patient); // ✅ use patient object
         } else {
-          console.error("Failed to fetch records:", response?.message);
+          console.error("Failed to fetch patient:", response?.message);
         }
       } catch (error) {
-        console.error("Error fetching recent patients:", error);
+        console.error("Error fetching patient details:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRecentRecords();
-  }, []);
+    fetchPatientDetails();
+  }, [id]);
 
-  const navigate = useNavigate();
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <div id="test-details-view" className="test-details-container">
       <div className="header">
@@ -47,21 +52,28 @@ const RecordDetails = () => {
               <div className="user-info">
                 <img
                   className="user-avatar"
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=4&w=256&h=256&q=60"
+                  src={
+                    recordDetails.photo
+                      ? `data:image/jpeg;base64,${recordDetails.photo}`
+                      : "https://via.placeholder.com/150"
+                  }
                   alt="User"
                 />
                 <div>
-                  <h4 className="user-name">Priya Sharma</h4>
+                  <h4 className="user-name">{recordDetails.name}</h4>
                   <p className="user-aadhaar">
                     Aadhaar:{" "}
-                    <span className="aadhaar-mask">XXXX-XXXX-4567</span>
+                    <span className="aadhaar-mask">
+                      XXXX-XXXX-{recordDetails.aadhaarNumber?.slice(-4)}
+                    </span>
                   </p>
+                  <p className="user-phone">Phone: {recordDetails.phone}</p>
                 </div>
               </div>
               <div className="address">
                 <p>
-                  <span className="label">Address:</span> 123, MG Road,
-                  Bangalore, Karnataka - 560001
+                  <span className="label">Address:</span>{" "}
+                  {recordDetails.address}
                 </p>
               </div>
             </div>
@@ -69,6 +81,7 @@ const RecordDetails = () => {
             <div className="doc-box">
               <h4 className="doc-title">Uploaded Documents</h4>
               <div className="doc-grid">
+                {/* Replace with dynamic URLs if API provides */}
                 <div className="doc-item">
                   <img
                     src="https://via.placeholder.com/150"
@@ -83,16 +96,12 @@ const RecordDetails = () => {
                   />
                   <p>Aadhaar Back</p>
                 </div>
-                <div className="doc-item">
-                  <img src="https://via.placeholder.com/150" alt="Test Image" />
-                  <p>Test Image</p>
-                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Test Data */}
+        {/* Test Data (static for now) */}
         <div className="card-header test-data">Test Data</div>
         <div className="card-body">
           <div className="grid three-cols">
@@ -117,20 +126,7 @@ const RecordDetails = () => {
 
         {/* Footer */}
         <div className="card-footer">
-          <div>
-            {/* <p className="status">
-              <span>Status:</span>
-              <span className="badge pending">Pending</span>
-            </p> */}
-            <p className="submitted">
-              Submitted by: Priya Sharma on Jan 6, 2023
-            </p>
-          </div>
-          {/* <div className="actions">
-            <button className="btn btn-approve">Approve</button>
-            <button className="btn btn-reject">Reject</button>
-            <button className="btn btn-pending">Set Pending</button>
-          </div> */}
+          <p className="submitted">Submitted by: {recordDetails.name}</p>
         </div>
       </div>
     </div>

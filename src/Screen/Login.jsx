@@ -6,10 +6,12 @@ import { useNavigate } from "react-router-dom";
 import { loginSuccess } from "../Store/authSlice";
 import { useDispatch } from "react-redux";
 import { showToast } from "../Main/ToastManager";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const Navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     fullName: "",
@@ -106,15 +108,27 @@ const Login = () => {
                 onChange={handleChange}
               />
             </div>
-            <div className="input-group">
+            <div className="input-group" style={{ position: "relative" }}>
               <label>Password</label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
               />
+              <span
+                onClick={() => setShowPassword((prev) => !prev)}
+                style={{
+                  position: "absolute",
+                  right: "15px",
+                  top: "73%",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                }}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
             {/* {!isLogin && (
               <div className="input-group">

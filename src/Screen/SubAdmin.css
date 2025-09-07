@@ -8,8 +8,8 @@
   align-items: center;
 }
 
-.title {
-  font-size: 18px;
+.title-header {
+  font-size: 22px !important;
   font-weight: 600;
   color: var(--black-color);
 }
@@ -65,7 +65,7 @@
 .btn {
   font-size: 12px;
   font-weight: 600;
-  padding: 2px 8px;
+  padding: 6px 18px;
   border-radius: 9999px;
   transition: 0.2s;
   cursor: pointer;
@@ -86,6 +86,11 @@
 }
 .deactivate-btn:hover {
   background: var(--danger-bg);
+}
+
+.activate-btn {
+  background-color: var(--success-color);
+  color: var(--white);
 }
 
 .list-body {
@@ -156,11 +161,13 @@
 .save-btn {
   background: var(--primary-color);
   color: var(--white);
+  padding: 6px 15px;
 }
 
 .cancel-btn {
   background: var(--gray-color);
   color: var(--white);
+  padding: 6px 15px;
 }
 
 .modal input {
@@ -182,7 +189,7 @@ filter #filter {
   display: flex;
   align-items: center;
   gap: 10px;
-  justify-content: end;
+  justify-content: space-between;
   margin: 15px 0;
 }
 
