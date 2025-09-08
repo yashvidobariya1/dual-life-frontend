@@ -10,55 +10,81 @@ import { HiCalendarDateRange } from "react-icons/hi2";
 import { GetCall, PostCall } from "./ApiService";
 import moment from "moment";
 import Loader from "../Main/Loader";
+import { showToast } from "../Main/ToastManager";
 
 const Dashboard = () => {
   const [recentRecords, setRecentRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
 
-  useEffect(() => {
-    const fetchRecentRecords = async () => {
-      try {
-        setLoading(true);
-        const response = await PostCall(
-          "admin/getAllPatients?recentPatients=true"
-        );
-        if (response?.success) {
-          setRecentRecords(response.patients);
-        } else {
-          console.error("Failed to fetch records:", response?.message);
-        }
-      } catch (error) {
-        console.error("Error fetching recent patients:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [showPopup, setShowPopup] = useState(false);
+  const [quantity, setQuantity] = useState("");
 
+  useEffect(() => {
     fetchRecentRecords();
-  }, []);
-
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        const response = await GetCall("admin/getAdminDashboardStats");
-        if (response?.success) {
-          setDashboardData(response.data); // ✅ use response.data instead of patients
-        } else {
-          console.error("Failed to fetch dashboard data:", response?.message);
-        }
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDashboardData();
   }, []);
 
-  if (loading) {
+  const fetchRecentRecords = async () => {
+    try {
+      setLoading(true);
+      const response = await PostCall(
+        "admin/getAllPatients?recentPatients=true"
+      );
+      if (response?.success) {
+        setRecentRecords(response?.patients);
+      }
+    } catch (error) {
+      console.error("Error fetching recent patients:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const response = await GetCall("admin/getAdminDashboardStats");
+      if (response?.success) {
+        setDashboardData(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateInventory = async (action) => {
+    if (!quantity || isNaN(quantity) || Number(quantity) <= 0) {
+      showToast("Please enter a valid quantity.", "error");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await PostCall("admin/updateAdminInventory", {
+        action,
+        quantity: Number(quantity),
+      });
+
+      if (response?.success) {
+        showToast(response.message, "success");
+        setShowPopup(false);
+        setQuantity("");
+        fetchDashboardData();
+      } else {
+        showToast(response?.message || "Failed to update inventory", "error");
+      }
+    } catch (error) {
+      console.error("Error updating inventory:", error);
+      showToast(error, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading && !dashboardData) {
     return <Loader />;
   }
 
@@ -81,6 +107,7 @@ const Dashboard = () => {
           value: dashboardData.adminKitsAvailable,
           color: "orange",
           icon: <FaChartSimple />,
+          clickable: true, // mark popup trigger
         },
         {
           label: "Total Kits Available",
@@ -116,7 +143,11 @@ const Dashboard = () => {
     <div className="dashboard">
       <div className="stats-grid">
         {stats.map((item, index) => (
-          <div className="card" key={index}>
+          <div
+            className={`card ${item.clickable ? "clickable" : ""}`}
+            key={index}
+            onClick={() => item.clickable && setShowPopup(true)}
+          >
             <div className={`icon ${item.color}`}>{item.icon}</div>
             <div className="info">
               <p className="label">{item.label}</p>
@@ -125,6 +156,39 @@ const Dashboard = () => {
           </div>
         ))}
       </div>
+
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup">
+            <button className="popup-close" onClick={() => setShowPopup(false)}>
+              &times;
+            </button>
+
+            <h3>Update Admin Kits</h3>
+            <p>Current Kits: {dashboardData?.adminKitsAvailable}</p>
+            <input
+              type="number"
+              placeholder="Enter quantity"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+            />
+            <div className="popup-actions">
+              <button
+                className="btn add"
+                onClick={() => handleUpdateInventory("add")}
+              >
+                Add
+              </button>
+              <button
+                className="btn remove"
+                onClick={() => handleUpdateInventory("remove")}
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="quick-actions">
         <h2>Quick Actions</h2>
@@ -143,7 +207,7 @@ const Dashboard = () => {
 
       <div className="recent-records">
         <h2>Recent Test Records</h2>
-        {recentRecords.map((rec, index) => (
+        {recentRecords?.map((rec, index) => (
           <div key={index} className="record">
             <div className="record-header">
               <span className="aadhaar-details">

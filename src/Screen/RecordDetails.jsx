@@ -6,7 +6,8 @@ import Loader from "../Main/Loader";
 
 const RecordDetails = () => {
   const { id } = useParams();
-  const [recordDetails, setRecordDetails] = useState(null);
+  const [recordDetails, setRecordDetails] = useState([]);
+  const [recordhealthDetials, setrecordhealthDetials] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -16,7 +17,10 @@ const RecordDetails = () => {
         setLoading(true);
         const response = await PostCall(`admin/getPatientById/${id}`);
         if (response?.success) {
-          setRecordDetails(response.patient); // ✅ use patient object
+          setRecordDetails(response?.patient);
+          setrecordhealthDetials(
+            response?.patient?.reports?.[0]?.healthResults || {}
+          );
         } else {
           console.error("Failed to fetch patient:", response?.message);
         }
@@ -105,21 +109,52 @@ const RecordDetails = () => {
         <div className="card-header test-data">Test Data</div>
         <div className="card-body">
           <div className="grid three-cols">
+            {/* Hemoglobin */}
             <div className="field">
               <label>Hemoglobin</label>
-              <input type="text" value="12.5 g/dL" disabled />
+              <input
+                type="text"
+                value={
+                  recordhealthDetials?.hemoglobin
+                    ? `${recordhealthDetials.hemoglobin.value} ${recordhealthDetials.hemoglobin.unit}`
+                    : "-"
+                }
+                disabled
+              />
             </div>
+
+            {/* Glucose */}
             <div className="field">
               <label>Glucose</label>
-              <input type="text" value="98 mg/dL" disabled />
+              <input
+                type="text"
+                value={
+                  recordhealthDetials?.glucose
+                    ? `${recordhealthDetials.glucose.value} ${recordhealthDetials.glucose.unit}`
+                    : "-"
+                }
+                disabled
+              />
             </div>
+
+            {/* Blood Group */}
             <div className="field">
               <label>Blood Group</label>
-              <input type="text" value="B+" disabled />
+              <input
+                type="text"
+                value={recordhealthDetials?.bloodGroup || "-"}
+                disabled
+              />
             </div>
+
+            {/* Sickle Cell */}
             <div className="field">
               <label>Sickle Cell</label>
-              <input type="text" value="Negative" disabled />
+              <input
+                type="text"
+                value={recordhealthDetials?.sickleCell?.result || "-"}
+                disabled
+              />
             </div>
           </div>
         </div>

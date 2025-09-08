@@ -16,6 +16,8 @@ import UserDashboard from "./User/UserDashboard";
 import ProtectedRoute from "./Main/ProtectedRoute";
 import PublicRoute from "./Main/PublicRoute";
 import ToastManager from "./Main/ToastManager";
+import Account from "./Screen/Account";
+import ChangePassword from "./Screen/ChangePassword";
 
 function Layout({
   children,
@@ -146,7 +148,7 @@ function App() {
             }
           />
           <Route
-            path="/reports/reportdetails"
+            path="/reports/reportdetails/:id"
             element={
               <ProtectedRoute>
                 <ReportDetails />
@@ -158,6 +160,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <UserDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/account"
+            element={
+              <ProtectedRoute>
+                <Account />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/changepassword"
+            element={
+              <ProtectedRoute>
+                <ChangePassword />
               </ProtectedRoute>
             }
           />

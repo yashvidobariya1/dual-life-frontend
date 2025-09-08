@@ -22,7 +22,8 @@ const SubAdmin = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchAadhaar, setSearchAadhaar] = useState("");
+  const [searchQuery, setsearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
 
   // edit mode states
   const [isEditMode, setIsEditMode] = useState(false);
@@ -32,6 +33,7 @@ const SubAdmin = () => {
   const togglePassword = () => {
     setShowPassword((prev) => !prev);
   };
+
   const [formData, setFormData] = useState({
     name: "",
     aadhaar: "",
@@ -40,12 +42,66 @@ const SubAdmin = () => {
     password: "",
     // confirmPassword: "",
     dob: "",
-    // gender: "",
   });
 
-  const handleFormChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const [errors, setErrors] = useState({});
+
+  // ------------------ VALIDATION ------------------
+  const validateField = (name, value) => {
+    let error = "";
+
+    switch (name) {
+      case "name":
+        if (!value) error = "Name is required";
+        break;
+
+      case "email":
+        if (!value) error = "Email is required";
+        else if (!/\S+@\S+\.\S+/.test(value)) error = "Enter a valid email";
+        break;
+
+      case "mobileNumber":
+        if (!value) error = "Mobile number is required";
+        else if (!/^[0-9]{10}$/.test(value))
+          error = "Enter a valid 10-digit number";
+        break;
+
+      case "password":
+        if (!isEditMode && !value) error = "Password is required";
+        else if (value && value.length < 6)
+          error = "Password must be at least 6 characters";
+        break;
+
+      // case "confirmPassword":
+      //   if (!isEditMode && !value) error = "Confirm Password is required";
+      //   else if (value !== formData.password) error = "Passwords do not match";
+      //   break;
+
+      default:
+        break;
+    }
+    return error;
   };
+
+  const validateForm = () => {
+    const newErrors = {};
+    Object.keys(formData).forEach((key) => {
+      const error = validateField(key, formData[key]);
+      if (error) newErrors[key] = error;
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // live validation
+    const error = validateField(name, value);
+    setErrors((prev) => ({ ...prev, [name]: error }));
+  };
+  // -------------------------------------------------
 
   const resetAll = () => {
     setStep(0);
@@ -59,10 +115,9 @@ const SubAdmin = () => {
       email: "",
       mobileNumber: "",
       password: "",
-      // confirmPassword: "",
       dob: "",
-      // gender: "",
     });
+    setErrors({});
     setShowModal(false);
     setLoading(false);
     setIsEditMode(false);
@@ -75,39 +130,11 @@ const SubAdmin = () => {
     setStep(0);
   };
 
-  // const handleSearch = async () => {
-  //   if (!searchAadhaar || searchAadhaar.length !== 12) {
-  //     showToast("Enter valid 12-digit Aadhaar number", "error");
-  //     return;
-  //   }
-  //   try {
-  //     setLoading(true);
-  //     const res = await PostCall(
-  //       `admin/getAllSubAdmins?aadhaarNumber=${searchAadhaar}`
-  //     );
-  //     if (res?.success) {
-  //       setsubadminData(res.subAdmins || []);
-  //       setTotalPages(1); // single result, so no pagination
-  //     } else {
-  //       showToast(res?.message || "No record found", "error");
-  //       setsubadminData([]);
-  //     }
-  //   } catch (err) {
-  //     console.error("Search error:", err);
-  //     showToast("Error searching Aadhaar", "error");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const goBack = () => {
     if (step === 1) {
       setOtp("");
       setRefId("");
     }
-    // if (step === 2) {
-    //   setFormData((p) => ({ ...p, password: "", confirmPassword: "" }));
-    // }
     setStep((s) => Math.max(0, s - 1));
   };
 
@@ -155,16 +182,13 @@ const SubAdmin = () => {
 
       if (res?.success) {
         setVerifyResponse(res.kycData);
-
         setFormData({
           name: res?.kycData?.name || "",
           aadhaar: aadhaar,
           email: "",
           mobileNumber: "",
           password: "",
-          // confirmPassword: "",
           dob: res?.kycData?.dob,
-          // gender: res?.kycData?.gender,
         });
 
         setStep(2);
@@ -205,13 +229,11 @@ const SubAdmin = () => {
           email: subAdminData.email || "",
           mobileNumber: subAdminData.phone || "",
           password: subAdminData.password || "",
-          // confirmPassword: subAdminData.password || "", // usually confirm = password
-          dob: dob ? dob.split("T")[0] : "", // format yyyy-mm-dd for input[type=date]
-          // gender: subAdminData.gender || "",
+          // confirmPassword: subAdminData.password || "",
+          dob: dob ? dob.split("T")[0] : "",
         });
         setVerifyResponse({
           dob: subAdminData?.dob || "",
-          // gender: subAdminData?.gender || "",
           name: subAdminData?.name || "",
         });
       } else {
@@ -228,11 +250,14 @@ const SubAdmin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("submit");
 
-    // if (formData.password !== formData.confirmPassword) {
-    //   showToast("Passwords do not match!", "error");
-    //   return;
-    // }
+    if (!validateForm()) {
+      showToast("Please fix form errors before submitting", "error");
+      return;
+    }
+
+    console.log("validateForm", validateForm());
 
     const body = {
       aadhaarNumber: formData.aadhaar,
@@ -241,7 +266,7 @@ const SubAdmin = () => {
       phone: formData.mobileNumber,
       password: formData.password,
       dob: formData.dob,
-      // gender: formData.gender,
+      kycData: verifyResponse._id,
     };
 
     try {
@@ -292,7 +317,7 @@ const SubAdmin = () => {
     try {
       setLoading(true);
       const response = await PostCall(
-        `admin/getAllSubAdmins?recentSubAdmins=${filter}&page=${page}&limit=${pageSize}&search=${searchAadhaar}`
+        `admin/getAllSubAdmins?recentSubAdmins=${filter}&page=${page}&limit=${pageSize}&query=${debouncedSearch}`
       );
       if (response?.success) {
         setsubadminData(response.subAdmins);
@@ -309,7 +334,21 @@ const SubAdmin = () => {
 
   useEffect(() => {
     fetchRecentRecords();
-  }, [page, pageSize, filter, searchAadhaar]);
+  }, [page, pageSize, filter, debouncedSearch]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   if (loading) {
     return <Loader />;
@@ -329,24 +368,18 @@ const SubAdmin = () => {
             <input
               type="text"
               placeholder="Search Aadhaar"
-              value={searchAadhaar}
-              onChange={(e) =>
-                setSearchAadhaar(e.target.value.replace(/\D/g, "").slice(0, 12))
-              }
+              value={searchQuery}
+              onChange={(e) => setsearchQuery(e.target.value.slice(0, 12))}
               maxLength={12}
-              // inputMode="numeric"
             />
             <span className="search-icon">
               <FaSearch />
             </span>
           </div>
-          {/* <button className="filter-btn" onClick={fetchRecentRecords}>
-            Search
-          </button> */}
         </div>
         <div className="filter-subadmin">
           <label htmlFor="filter" className="filter-label">
-            Filter :
+            Filter:{" "}
           </label>
           <select
             id="filter"
@@ -361,39 +394,45 @@ const SubAdmin = () => {
       </div>
 
       <div className="list-container">
-        {subadminData.map((admin, index) => (
-          <div key={index} className="list-item">
-            <div className="list-header">
-              <p className="admin-name">{admin.name}</p>
-              <div className="actions">
-                <button
-                  className="btn edit-btn"
-                  onClick={() => handleEdit(admin._id)}
-                >
-                  Edit
-                </button>
-                <button
-                  className={`btn ${
-                    admin.isActive ? "deactivate-btn" : "activate-btn"
-                  }`}
-                  onClick={() => handleToggleActive(admin._id, admin.isActive)}
-                >
-                  {admin.isActive ? "Deactivate" : "Activate"}
-                </button>
+        {subadminData.length === 0 ? (
+          <p className="no-data">No data found</p>
+        ) : (
+          subadminData.map((admin, index) => (
+            <div key={index} className="list-item">
+              <div className="list-header">
+                <p className="admin-name">{admin.name}</p>
+                <div className="actions">
+                  <button
+                    className="btn edit-btn"
+                    onClick={() => handleEdit(admin._id)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className={`btn ${
+                      admin.isActive ? "deactivate-btn" : "activate-btn"
+                    }`}
+                    onClick={() =>
+                      handleToggleActive(admin._id, admin.isActive)
+                    }
+                  >
+                    {admin.isActive ? "Deactivate" : "Activate"}
+                  </button>
+                </div>
+              </div>
+
+              <div className="list-body">
+                <p className="phone">
+                  <IoCallOutline /> {admin.phone}
+                </p>
+                <p className="stats">
+                  <FaCheck /> Total Tests: {admin.tests} | Success Rate:{" "}
+                  {admin.success}
+                </p>
               </div>
             </div>
-
-            <div className="list-body">
-              <p className="phone">
-                <IoCallOutline /> {admin.phone}
-              </p>
-              <p className="stats">
-                <FaCheck /> Total Tests: {admin.tests} | Success Rate:{" "}
-                {admin.success}
-              </p>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {showModal && (
@@ -467,9 +506,9 @@ const SubAdmin = () => {
             {step === 2 && (
               <>
                 <h3>{isEditMode ? "Edit Sub Admin" : "Add New Sub Admin"}</h3>
-                <form onSubmit={handleSubmit} className="modal-form">
+                <form className="modal-form">
                   {/* Aadhaar */}
-                  <label>Addhar Number</label>
+                  <label>Aadhaar Number</label>
                   <input
                     type="text"
                     name="aadhaar"
@@ -483,8 +522,10 @@ const SubAdmin = () => {
                     type="text"
                     name="name"
                     value={formData.name}
-                    readOnly={!isEditMode ? true : false}
+                    readOnly={!isEditMode}
+                    onChange={handleFormChange}
                   />
+                  {errors.name && <p className="error-text">{errors.name}</p>}
 
                   {/* Email */}
                   <label>Email</label>
@@ -494,8 +535,8 @@ const SubAdmin = () => {
                     placeholder="Enter Email"
                     value={formData.email}
                     onChange={handleFormChange}
-                    required
                   />
+                  {errors.email && <p className="error-text">{errors.email}</p>}
 
                   {/* Mobile */}
                   <label>Mobile Number</label>
@@ -505,8 +546,10 @@ const SubAdmin = () => {
                     placeholder="Enter Mobile Number"
                     value={formData.mobileNumber}
                     onChange={handleFormChange}
-                    required
                   />
+                  {errors.mobileNumber && (
+                    <p className="error-text">{errors.mobileNumber}</p>
+                  )}
 
                   {/* DOB */}
                   <label>Date Of Birth</label>
@@ -533,7 +576,6 @@ const SubAdmin = () => {
                       placeholder="Enter Password"
                       value={formData.password}
                       onChange={handleFormChange}
-                      required={!isEditMode}
                     />
                     <span
                       onClick={togglePassword}
@@ -548,14 +590,40 @@ const SubAdmin = () => {
                       {showPassword ? <FaEyeSlash /> : <FaEye />}
                     </span>
                   </div>
+                  {errors.password && (
+                    <p className="error-text">{errors.password}</p>
+                  )}
+
+                  {/* Confirm Password (only for new sub-admins) */}
+                  {/* {!isEditMode && (
+                    <>
+                      <label>Confirm Password</label>
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="confirmPassword"
+                        placeholder="Confirm Password"
+                        value={formData.confirmPassword}
+                        onChange={handleFormChange}
+                      />
+                      {errors.confirmPassword && (
+                        <p className="error-text">{errors.confirmPassword}</p>
+                      )}
+                    </>
+                  )} */}
+
+                  {/* Actions */}
                   <div className="modal-actions">
-                    <button type="submit" className="btn save-btn">
+                    <button
+                      type="submit"
+                      className="btn save-btn"
+                      onClick={handleSubmit}
+                    >
                       {isEditMode ? "Update" : "Save"}
                     </button>
                     <button
                       type="button"
-                      className="btn cancel-btn"
                       onClick={resetAll}
+                      className="btn cancel-btn"
                     >
                       Cancel
                     </button>
@@ -564,38 +632,6 @@ const SubAdmin = () => {
               </>
             )}
           </div>
-        </div>
-      )}
-
-      {!filter && (
-        <div className="pagination">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((prev) => prev - 1)}
-          >
-            Prev
-          </button>
-          <span>
-            Page {page} of {totalPages}
-          </span>
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage((prev) => prev + 1)}
-          >
-            Next
-          </button>
-
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setPage(1);
-            }}
-          >
-            <option value={5}>5</option>
-            <option value={15}>15</option>
-            <option value={20}>20</option>
-          </select>
         </div>
       )}
     </div>

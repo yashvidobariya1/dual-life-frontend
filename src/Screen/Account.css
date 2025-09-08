@@ -1,0 +1,63 @@
+.account-card {
+  margin: 10px;
+  background: var(--white);
+  border-radius: 1rem;
+  overflow: hidden;
+  width: 500px;
+}
+
+.account-container {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  padding: 1.5rem; /* p-6 */
+}
+
+.account-avatar {
+  width: 6rem; /* w-24 */
+  height: 6rem; /* h-24 */
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* shadow-md */
+}
+
+.account-name {
+  margin: 1px 0px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-color);
+}
+
+.account-email {
+  font-size: 0.875rem; /* text-sm */
+  color: var(--gray-color);
+  margin: 0px;
+}
+
+.account-info {
+  /* margin-top: 1rem; */
+  width: 100%;
+  text-align: left;
+}
+
+.account-info span {
+  font-weight: 500; /* font-medium */
+}
+
+.status {
+  font-weight: 600; /* font-semibold */
+}
+
+.status.active {
+  color: var(--green-color);
+}
+
+.status.inactive {
+  color: var(--rejected-color);
+}
+
+.account-flex {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}

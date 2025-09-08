@@ -111,3 +111,13 @@ code {
 .pagination select:hover {
   border-color: #007bff;
 }
+
+.no-data {
+  padding: 10px 20px;
+}
+
+.error-text {
+  color: red;
+  font-size: 12px;
+  margin: 2px 0px 10px 6px;
+}

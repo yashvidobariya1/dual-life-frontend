@@ -14,6 +14,8 @@ const Report = () => {
   const [loading, setLoading] = useState(true);
 
   // pagination states
+  const [searchQuery, setsearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [filter, setFilter] = useState(true);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -24,11 +26,12 @@ const Report = () => {
       setLoading(true);
       try {
         const response = await GetCall(
-          `admin/getAllReports?recentReports=${filter}&page=${page}&limit=${pageSize}`
+          `admin/getAllReports?recentReports=${filter}&page=${page}&limit=${pageSize}&query=${debouncedSearch}`
         );
         if (response?.success) {
-          setRecord(response.reports.patient);
-          setTotalPages(response.totalPages || 1); // make sure backend sends totalPages
+          const patients = response.reports.map((r) => r.patient || null);
+          setRecord(patients);
+          setTotalPages(response.totalPages || 1);
         } else {
           console.error("Failed to fetch records:", response?.message);
         }
@@ -40,10 +43,10 @@ const Report = () => {
     };
 
     fetchRecentRecords();
-  }, [page, pageSize, filter]);
+  }, [page, pageSize, filter, debouncedSearch]);
 
   const handleDetails = (id) => {
-    navigate(`/test-records/recorddetails/${id}`);
+    navigate(`/reports/reportdetails/${id}`);
   };
 
   const handleChange = (event) => {
@@ -51,6 +54,20 @@ const Report = () => {
     setFilter(value);
     console.log("Selected:", value);
   };
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   if (loading) {
     return <Loader />;
@@ -62,12 +79,19 @@ const Report = () => {
         <h2>Test Record Management</h2>
         <div className="actions">
           <div className="search-box">
-            <input type="text" placeholder="Search Aadhaar" />
+            <input
+              type="text"
+              placeholder="Search Aadhaar"
+              value={searchQuery}
+              onChange={(e) => setsearchQuery(e.target.value.slice(0, 12))}
+              maxLength={12}
+              // inputMode="numeric"
+            />
             <span className="search-icon">
               <FaSearch />
             </span>
           </div>
-          <button className="filter-btn">Search</button>
+          {/* <button className="filter-btn">Search</button> */}
         </div>
       </div>
       <div className="filter">
@@ -90,35 +114,39 @@ const Report = () => {
 
       <div className="records-container">
         <ul>
-          {record?.map((record, index) => (
-            <li key={index} className="record-item">
-              <div className="record-header">
-                <p className="aadhaar">Aadhaar: {record.aadhaarNumber}</p>
-              </div>
-              <div className="record-info">
-                <p className="sub-admin">
-                  <RiAdminFill /> {record.name}
-                </p>
-                <p className="date">
-                  <HiCalendarDateRange />{" "}
-                  {record.registeredAt
-                    ? moment(record.registeredAt).format("DD/MM/YYYY")
-                    : "N/A"}
-                </p>
-              </div>
-              <div className="record-footer">
-                <button
-                  className="view-btn"
-                  onClick={() => handleDetails(record._id)}
-                >
-                  View Details
-                </button>
-              </div>
-            </li>
-          ))}
+          {record.length === 0 ? (
+            <p className="no-data">No data found</p>
+          ) : (
+            record.map((record, index) => (
+              <li key={index} className="record-item">
+                <div className="record-header">
+                  <p className="aadhaar">Aadhaar: {record.aadhaarNumber}</p>
+                </div>
+                <div className="record-info">
+                  <p className="sub-admin">
+                    <RiAdminFill /> {record.name}
+                  </p>
+                  <p className="date">
+                    <HiCalendarDateRange />{" "}
+                    {record.registeredAt
+                      ? moment(record.registeredAt).format("DD/MM/YYYY")
+                      : "N/A"}
+                  </p>
+                </div>
+                <div className="record-footer">
+                  <button
+                    className="view-btn"
+                    onClick={() => handleDetails(record._id)}
+                  >
+                    View Details
+                  </button>
+                </div>
+              </li>
+            ))
+          )}
         </ul>
       </div>
-      {!filter && (
+      {record.length > 0 && !filter && (
         <div className="pagination">
           <button
             disabled={page === 1}

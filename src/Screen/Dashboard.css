@@ -25,7 +25,6 @@
   border-radius: 6px;
   color: var(--white);
   font-size: 20px;
-  margin-right: 12px;
 }
 
 .icon.blue {
@@ -171,6 +170,88 @@
 
 .dashboard-content {
   text-align: left;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup {
+  background: var(--white);
+  padding: 20px;
+  border-radius: 12px;
+  width: 320px;
+  text-align: center;
+  z-index: 10000;
+  position: relative;
+}
+
+.popup input {
+  width: calc(100% - 16px);
+  padding: 8px;
+  margin: 12px 0;
+  border: 1px solid var(--gray-light);
+  border-radius: 8px;
+}
+
+.popup-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--gray-color);
+}
+
+.popup-close:hover {
+  color: var(--black-color);
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.popup .btn {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn.add {
+  background: var(--green-color);
+  color: var(--white);
+}
+
+.btn.remove {
+  background: var(--rejected-color);
+  color: var(--white);
+}
+
+.btn.cancel {
+  background: var(--gray-color);
+  color: var(--white);
+}
+
+.popup h3 {
+  margin: 4px 0;
 }
 
 @media (max-width: 768px) {

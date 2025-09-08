@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IoMdMenu } from "react-icons/io";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import "./Header.css";
 import { useSelector, useDispatch } from "react-redux";
 import { clearUserInfo } from "../Store/authSlice";
 
 const Header = ({ toggleSidebar }) => {
   const location = useLocation();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.userInfo);
 
@@ -19,13 +19,23 @@ const Header = ({ toggleSidebar }) => {
     "/dashboard": "Dashboard",
     "/sub-admins": "Sub Admins",
     "/test-records": "Test Records",
-    "/recorddetails": "Test Record / Record Details",
+    "/test-records/recorddetails/:id": "Test Records / Record Details",
     "/reports": "Reports",
-    "/reports/reportdetails": "Reports / Report Details",
+    "/reports/reportdetails/:id": "Reports / Report Details",
+    "/account": "Account",
   };
 
-  const title = routeTitles[location.pathname] || "Unknown";
+  const getTitle = (pathname) => {
+    if (pathname.startsWith("/test-records/recorddetails/")) {
+      return "Test Records / Record Details";
+    }
+    if (pathname.startsWith("/reports/reportdetails/")) {
+      return "Reports / Report Details";
+    }
+    return routeTitles[pathname] || "Unknown";
+  };
 
+  const title = getTitle(location.pathname);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -42,6 +52,10 @@ const Header = ({ toggleSidebar }) => {
     localStorage.clear();
     dispatch(clearUserInfo());
     window.location.href = "/login";
+  };
+
+  const handleChnagepassword = () => {
+    navigate("/changepassword");
   };
 
   return (
@@ -72,6 +86,7 @@ const Header = ({ toggleSidebar }) => {
           {dropdownOpen && (
             <div className="dropdown-menu">
               <button onClick={handleLogout}>Logout</button>
+              <button onClick={handleChnagepassword}>Change Password</button>
             </div>
           )}
         </div>

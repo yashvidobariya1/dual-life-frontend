@@ -6,7 +6,7 @@
   flex-direction: column;
   position: fixed;
   height: 100%;
-  z-index: 999;
+  /* z-index: 990; */
 
   padding: 15px;
 }

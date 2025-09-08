@@ -125,7 +125,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(37, 37, 37, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -217,4 +217,10 @@ filter #filter {
 
 .filter-select:hover {
   border-color: #999;
+}
+
+@media (max-width: 600px) {
+  .modal {
+    max-width: 80%;
+  }
 }
