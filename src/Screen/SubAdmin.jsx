@@ -298,7 +298,7 @@ const SubAdmin = () => {
   const handleToggleActive = async (id, currentStatus) => {
     try {
       setLoading(true);
-      const body = { isActive: !currentStatus }; // flip the status
+      const body = { isActive: !currentStatus };
       const res = await PutCall(`admin/toggleSubAdmin/${id}`, body);
 
       if (res?.success) {

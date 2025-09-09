@@ -15,11 +15,25 @@ const SubadminDetials = () => {
     const fetchPatientDetails = async () => {
       try {
         setLoading(true);
-        const response = await PostCall(`admin/getPatientById/${id}`);
+        const response = await PostCall(`admin/GetSubAdminById/${id}`);
         if (response?.success) {
-          setSubadminDetials(response?.patient);
+          const subAdmin = response?.subAdmin?.subAdmin || {};
+          const dob = response?.subAdmin?.dob || null;
+
+          // merge everything you want in one object
+          setSubadminDetials({
+            ...subAdmin,
+            dob, // take dob from parent
+            performance: subAdmin.performance || {},
+            KitInventory: subAdmin.KitInventory || {},
+            kitsAssigned: subAdmin.kitsAssigned || 0,
+            kitUsageHistory: subAdmin.kitUsageHistory || [],
+            patientHistory: subAdmin.patientHistory || [],
+            kitUsageHistory: subAdmin.kitUsageHistory || [],
+          });
+
           setrecordhealthDetials(
-            response?.patient?.reports?.[0]?.healthResults || {}
+            response?.subAdmin?.reports?.[0]?.healthResults || {}
           );
         } else {
           console.error("Failed to fetch patient:", response?.message);
@@ -53,40 +67,70 @@ const SubadminDetials = () => {
         <div className="card-body">
           <div className="grid two-cols">
             <div>
-              <div className="user-info">
-                <img
+              <div className="user-info-subadmin">
+                {/* <img
                   className="user-avatar"
                   src={
-                    SubadminDetials.photo
+                    SubadminDetials?.photo
                       ? `data:image/jpeg;base64,${SubadminDetials.photo}`
                       : "https://via.placeholder.com/150"
                   }
                   alt="User"
-                />
+                /> */}
                 <div>
-                  <h4 className="user-name">{SubadminDetials.name}</h4>
+                  <h4 className="user-name">{SubadminDetials?.name}</h4>
                   <p className="user-aadhaar">
                     Aadhaar:{" "}
                     <span className="aadhaar-mask">
-                      XXXX-XXXX-{SubadminDetials.aadhaarNumber?.slice(-4)}
+                      XXXX-XXXX-{SubadminDetials?.aadhaarNumber?.slice(-4)}
                     </span>
                   </p>
                   <p className="user-phone">Phone: {SubadminDetials.phone}</p>
+                  <p className="user-phone">Email: {SubadminDetials.email}</p>
+                  <p className="user-phone">
+                    sub-Admin Id: {SubadminDetials.subAdminId}
+                  </p>
+                  <p className="user-phone">Email: {SubadminDetials.email}</p>
+                  <p className="user-phone">
+                    Date of Birth:{" "}
+                    {new Date(SubadminDetials?.dob).toLocaleDateString()}
+                  </p>
                 </div>
-              </div>
-              <div className="address">
-                <p>
-                  <span className="label">Address:</span>{" "}
-                  {SubadminDetials.address}
-                </p>
+                <div className="subadmin-details">
+                  <div className="address">
+                    <p>
+                      <span className="label-subadmin">performance</span>{" "}
+                      <p>
+                        Total Tests: {SubadminDetials?.performance?.totalTests}
+                      </p>
+                      <p>Kits Assigned: {SubadminDetials?.successfulTests}</p>
+                      <p>
+                        Kit Used: {SubadminDetials?.KitInventory?.failedTests}
+                      </p>
+                    </p>
+                  </div>
+                  <div className="address">
+                    <p>
+                      <span className="label-subadmin">Kit Inventory</span>{" "}
+                      <p>
+                        Total Tests: {SubadminDetials?.KitInventory?.kitUsed}
+                      </p>
+                      <p>Kits Assigned: {SubadminDetials?.kitUsed}</p>
+                      <p>
+                        Kit Used:{" "}
+                        {SubadminDetials?.KitInventory?.lifetimekitUsed}
+                      </p>
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="doc-box">
+            {/* <div className="doc-box">
               <h4 className="doc-title">Uploaded Documents</h4>
               <div className="doc-grid">
                 {SubadminDetials?.reports?.length > 0 ? (
-                  SubadminDetials.reports.map((report, reportIndex) =>
+                  SubadminDetials?.reports?.map((report, reportIndex) =>
                     report?.testImages?.length > 0 ? (
                       report.testImages.map((img, imgIndex) => (
                         <div
@@ -110,65 +154,12 @@ const SubadminDetials = () => {
                   <p>No reports available</p>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
+          <div className="card-header test-data">Test Data</div>
+          <div className="card-body"></div>
         </div>
 
-        {/* Test Data (static for now) */}
-        <div className="card-header test-data">Test Data</div>
-        <div className="card-body">
-          <div className="grid three-cols">
-            {/* Hemoglobin */}
-            <div className="field">
-              <label>Hemoglobin</label>
-              <input
-                type="text"
-                value={
-                  recordhealthDetials?.hemoglobin
-                    ? `${recordhealthDetials.hemoglobin.value} ${recordhealthDetials.hemoglobin.unit}`
-                    : "-"
-                }
-                disabled
-              />
-            </div>
-
-            {/* Glucose */}
-            <div className="field">
-              <label>Glucose</label>
-              <input
-                type="text"
-                value={
-                  recordhealthDetials?.glucose
-                    ? `${recordhealthDetials.glucose.value} ${recordhealthDetials.glucose.unit}`
-                    : "-"
-                }
-                disabled
-              />
-            </div>
-
-            {/* Blood Group */}
-            <div className="field">
-              <label>Blood Group</label>
-              <input
-                type="text"
-                value={recordhealthDetials?.bloodGroup || "-"}
-                disabled
-              />
-            </div>
-
-            {/* Sickle Cell */}
-            <div className="field">
-              <label>Sickle Cell</label>
-              <input
-                type="text"
-                value={recordhealthDetials?.sickleCell?.result || "-"}
-                disabled
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
         <div className="card-footer">
           <p className="submitted">Submitted by: {SubadminDetials.name}</p>
         </div>

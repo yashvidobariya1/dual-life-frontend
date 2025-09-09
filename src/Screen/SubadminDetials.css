@@ -1,0 +1,25 @@
+.label-subadmin {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.address p {
+  font-size: 16px;
+}
+
+.user-info-subadmin {
+  display: flex;
+  align-items: start;
+  gap: 36px;
+  justify-content: space-between;
+}
+
+.subadmin-details {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+  background-color: var(--gray-light);
+  border-radius: 8px;
+}
