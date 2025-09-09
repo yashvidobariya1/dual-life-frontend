@@ -157,16 +157,22 @@
     margin: 6px 0;
   }
 
-  .portal-header p {
+  .portal-header p,
+  .otp-popup-content p {
     font-size: 14px;
     margin: 3px 0px;
   }
 
-  .card-adhar h2 {
-    font-size: 14px !important;
+  .card-adhar h2,
+  .otp-popup-content h2 {
+    font-size: 16px !important;
   }
 
   .card-adhar {
     padding: 25px !important;
+  }
+
+  .otp-popup-content {
+    width: 260px;
   }
 }
