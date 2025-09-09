@@ -150,3 +150,23 @@
   background: var(--primary-color);
   color: var(--white);
 }
+
+@media (max-width: 600px) {
+  .portal-header h1 {
+    font-size: 24px;
+    margin: 6px 0;
+  }
+
+  .portal-header p {
+    font-size: 14px;
+    margin: 3px 0px;
+  }
+
+  .card-adhar h2 {
+    font-size: 14px !important;
+  }
+
+  .card-adhar {
+    padding: 25px !important;
+  }
+}

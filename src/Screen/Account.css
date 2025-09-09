@@ -3,7 +3,11 @@
   background: var(--white);
   border-radius: 1rem;
   overflow: hidden;
-  width: 500px;
+  width: 60%;
+}
+
+.card-main {
+  width: 100%;
 }
 
 .account-container {
@@ -109,4 +113,15 @@
 .account-actions button:last-child {
   background-color: var(--gray-light);
   color: var(--black-color);
+}
+
+@media (max-width: 660px) {
+  .account-card {
+    width: calc(100% - 20px);
+  }
+
+  .account-info label,
+  .account-info p {
+    width: 100%;
+  }
 }

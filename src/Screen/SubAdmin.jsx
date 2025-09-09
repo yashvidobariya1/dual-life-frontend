@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "./SubAdmin.css";
 import { IoCallOutline } from "react-icons/io5";
-import { FaCheck } from "react-icons/fa6";
+import { FaCheck, FaUserCheck, FaUserSlash } from "react-icons/fa6";
 import { PostCall, PutCall } from "../Screen/ApiService";
 import moment from "moment";
 import { showToast } from "../Main/ToastManager";
 import Loader from "../Main/Loader";
-import { FaSearch } from "react-icons/fa";
+import { FaEdit, FaSearch } from "react-icons/fa";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import {
+  MdOutlineArrowBackIos,
+  MdOutlineArrowForwardIos,
+} from "react-icons/md";
 
 const SubAdmin = () => {
   const [step, setStep] = useState(0);
@@ -407,23 +411,23 @@ const SubAdmin = () => {
             <div key={index} className="list-item">
               <div className="list-header">
                 <p className="admin-name">{admin.name}</p>
-                <div className="actions">
-                  <button
-                    className="btn edit-btn"
+                <div className="actions-action">
+                  <div
+                    className="action-btn edit-btn"
                     onClick={() => handleEdit(admin._id)}
                   >
-                    Edit
-                  </button>
-                  <button
-                    className={`btn ${
+                    <FaEdit />
+                  </div>
+                  <div
+                    className={`action-btn ${
                       admin.isActive ? "deactivate-btn" : "activate-btn"
                     }`}
                     onClick={() =>
                       handleToggleActive(admin._id, admin.isActive)
                     }
                   >
-                    {admin.isActive ? "Deactivate" : "Activate"}
-                  </button>
+                    {admin.isActive ? <FaUserSlash /> : <FaUserCheck />}
+                  </div>
                 </div>
               </div>
 
@@ -643,6 +647,37 @@ const SubAdmin = () => {
               </>
             )}
           </div>
+        </div>
+      )}
+      {subadminData?.length > 0 && !filter && (
+        <div className="pagination">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((prev) => prev - 1)}
+          >
+            <MdOutlineArrowBackIos />
+          </button>
+          <span>
+            Page {page} of {totalPages}
+          </span>
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage((prev) => prev + 1)}
+          >
+            <MdOutlineArrowForwardIos />
+          </button>
+
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setPage(1);
+            }}
+          >
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+          </select>
         </div>
       )}
     </div>

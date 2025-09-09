@@ -15,7 +15,7 @@
   font-weight: 600;
 }
 
-.actions {
+.actions-action {
   display: flex;
   gap: 10px;
 }
@@ -119,4 +119,23 @@
 
 .view-btn:hover {
   color: var(--primary-color);
+}
+
+.filter-subadmin {
+  display: flex;
+  gap: 3px;
+}
+
+@media (max-width: 600px) {
+  .actions-action {
+    gap: 10px !important;
+  }
+
+  .action-btn {
+    font-size: 12px;
+  }
+
+  .actions {
+    padding: 2px 0px !important;
+  }
 }

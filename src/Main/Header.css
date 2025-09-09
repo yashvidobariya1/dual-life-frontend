@@ -90,3 +90,22 @@
 .dropdown-menu button:hover {
   background: var(--gray-bg);
 }
+
+@media (max-width: 600px) {
+  .logo {
+    font-size: 14px;
+  }
+
+  .username {
+    font-size: 10px;
+  }
+
+  .main-header {
+    gap: 7px;
+    padding: 10px;
+  }
+
+  .header-toggle-menu {
+    gap: 8px;
+  }
+}

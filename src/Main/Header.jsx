@@ -4,6 +4,7 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import "./Header.css";
 import { useSelector, useDispatch } from "react-redux";
 import { clearUserInfo } from "../Store/authSlice";
+import img1 from "../Images/user.jpeg";
 
 const Header = ({ toggleSidebar }) => {
   const location = useLocation();
@@ -80,11 +81,7 @@ const Header = ({ toggleSidebar }) => {
           onClick={() => setDropdownOpen(!dropdownOpen)}
           style={{ cursor: "pointer", position: "relative" }}
         >
-          <img
-            src="https://via.placeholder.com/40"
-            alt="User"
-            style={{ borderRadius: "50%" }}
-          />
+          <img src={img1} alt="User" style={{ borderRadius: "50%" }} />
           <span className="username">{user?.name}</span>
 
           {dropdownOpen && (

@@ -66,112 +66,114 @@ const Account = () => {
   }
 
   return (
-    <div className="account-card">
-      <div className="account-container">
-        <div className="account-flex">
-          <img
-            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-              profile.name
-            )}&background=0D8ABC&color=fff&size=128`}
-            alt={profile.name}
-            className="account-avatar"
-          />
-          <div className="name-details">
-            <h2 className="account-name">{profile.name}</h2>
-            <p className="account-email">{profile.email}</p>
+    <div className="card-main">
+      <div className="account-card">
+        <div className="account-container">
+          <div className="account-flex">
+            <img
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                profile.name
+              )}&background=0D8ABC&color=fff&size=128`}
+              alt={profile.name}
+              className="account-avatar"
+            />
+            <div className="name-details">
+              <h2 className="account-name">{profile.name}</h2>
+              <p className="account-email">{profile.email}</p>
+            </div>
           </div>
-        </div>
 
-        {/* Info Section */}
-        <div className="account-info">
-          <label>
-            Name:
-            <input
-              type="text"
-              name="name"
-              value={formData.name || ""}
-              disabled
-              onChange={handleChange}
-            />
-          </label>
-          <label>
-            Email:
-            <input
-              type="email"
-              name="email"
-              value={formData.email || ""}
-              disabled={!editMode}
-              onChange={handleChange}
-            />
-          </label>
-          <label>
-            Phone:
-            <input
-              type="text"
-              name="phone"
-              value={formData.phone || ""}
-              disabled={!editMode}
-              onChange={handleChange}
-            />
-          </label>
-          <label>
-            Aadhaar:
-            <input
-              type="text"
-              name="aadhaarNumber"
-              value={formData.aadhaarNumber || ""}
-              disabled
-              onChange={handleChange}
-            />
-          </label>
+          {/* Info Section */}
+          <div className="account-info">
+            <label>
+              Name:
+              <input
+                type="text"
+                name="name"
+                value={formData.name || ""}
+                disabled
+                onChange={handleChange}
+              />
+            </label>
+            <label>
+              Email:
+              <input
+                type="email"
+                name="email"
+                value={formData.email || ""}
+                disabled={!editMode}
+                onChange={handleChange}
+              />
+            </label>
+            <label>
+              Phone:
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone || ""}
+                disabled={!editMode}
+                onChange={handleChange}
+              />
+            </label>
+            <label>
+              Aadhaar:
+              <input
+                type="text"
+                name="aadhaarNumber"
+                value={formData.aadhaarNumber || ""}
+                disabled
+                onChange={handleChange}
+              />
+            </label>
 
-          <p>
-            <span>User ID:</span> {profile.userId}
-          </p>
-          <p>
-            <span>Role:</span> {profile.role}
-          </p>
-          <p>
-            <span>Status:</span>{" "}
-            <span
-              className={`status ${profile.isActive ? "active" : "inactive"}`}
-            >
-              {profile.isActive ? "Active" : "Inactive"}
-            </span>
-          </p>
-
-          <div className="kits-info">
-            <h3>Kits Information</h3>
-            <p>Kits Available: {profile.kitInventory?.kitsAvailable}</p>
-            <p>Kits Used: {profile.kitInventory?.kitsUsed}</p>
             <p>
-              Lifetime Kits Assigned:{" "}
-              {profile.kitInventory?.lifetimeKitsAssigned}
+              <span>User ID:</span> {profile.userId}
+            </p>
+            <p>
+              <span>Role:</span> {profile.role}
+            </p>
+            <p>
+              <span>Status:</span>{" "}
+              <span
+                className={`status ${profile.isActive ? "active" : "inactive"}`}
+              >
+                {profile.isActive ? "Active" : "Inactive"}
+              </span>
+            </p>
+
+            <div className="kits-info">
+              <h3>Kits Information</h3>
+              <p>Kits Available: {profile.kitInventory?.kitsAvailable}</p>
+              <p>Kits Used: {profile.kitInventory?.kitsUsed}</p>
+              <p>
+                Lifetime Kits Assigned:{" "}
+                {profile.kitInventory?.lifetimeKitsAssigned}
+              </p>
+            </div>
+
+            <p>
+              <span>Last Login:</span>{" "}
+              {profile.lastLogin
+                ? new Date(profile.lastLogin).toLocaleString()
+                : "Never"}
             </p>
           </div>
 
-          <p>
-            <span>Last Login:</span>{" "}
-            {profile.lastLogin
-              ? new Date(profile.lastLogin).toLocaleString()
-              : "Never"}
-          </p>
-        </div>
-
-        {/* Action buttons */}
-        <div className="account-actions">
-          {!editMode ? (
-            <button onClick={() => setEditMode(true)}>Edit</button>
-          ) : (
-            <>
-              <button onClick={handleSave} disabled={loading}>
-                {loading ? "Saving..." : "Save"}
-              </button>
-              <button onClick={handleCancel} disabled={loading}>
-                Cancel
-              </button>
-            </>
-          )}
+          {/* Action buttons */}
+          <div className="account-actions">
+            {!editMode ? (
+              <button onClick={() => setEditMode(true)}>Edit</button>
+            ) : (
+              <>
+                <button onClick={handleSave} disabled={loading}>
+                  {loading ? "Saving..." : "Save"}
+                </button>
+                <button onClick={handleCancel} disabled={loading}>
+                  Cancel
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

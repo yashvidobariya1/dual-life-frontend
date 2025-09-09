@@ -17,9 +17,46 @@
 
 .subadmin-details {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   gap: 40px;
   padding: 40px;
   background-color: var(--gray-light);
   border-radius: 8px;
+}
+
+.assignkit-div {
+  margin: 4px 0px;
+  display: flex;
+  gap: 20px;
+}
+
+.assignkit-div button,
+.assign-kit {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+@media (max-width: 992px) {
+  .user-info-subadmin {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 600px) {
+  .subadmin-details {
+    width: calc(100% - 40px);
+    padding: 20px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card-testdetails {
+    padding: 20px;
+  }
 }

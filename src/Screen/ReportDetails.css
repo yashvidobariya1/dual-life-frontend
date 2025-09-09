@@ -228,11 +228,16 @@
 }
 
 @media (max-width: 500px) {
-  .header {
-    flex-direction: column;
+  .btn {
+    padding: 3px 7px;
   }
 
   .grid {
     flex-direction: column;
+  }
+
+  .card-header {
+    margin: 6px 0;
+    font-size: 26px;
   }
 }

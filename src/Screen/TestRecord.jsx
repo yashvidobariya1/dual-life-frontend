@@ -7,6 +7,10 @@ import { FaSearch } from "react-icons/fa";
 import moment from "moment";
 import { PostCall } from "./ApiService";
 import Loader from "../Main/Loader";
+import {
+  MdOutlineArrowBackIos,
+  MdOutlineArrowForwardIos,
+} from "react-icons/md";
 
 const TestRecord = () => {
   const navigate = useNavigate();
@@ -150,7 +154,7 @@ const TestRecord = () => {
             disabled={page === 1}
             onClick={() => setPage((prev) => prev - 1)}
           >
-            Prev
+            <MdOutlineArrowBackIos />
           </button>
           <span>
             Page {page} of {totalPages}
@@ -159,7 +163,7 @@ const TestRecord = () => {
             disabled={page === totalPages}
             onClick={() => setPage((prev) => prev + 1)}
           >
-            Next
+            <MdOutlineArrowForwardIos />
           </button>
 
           <select
@@ -169,7 +173,7 @@ const TestRecord = () => {
               setPage(1);
             }}
           >
-            <option value={5}>5</option>
+            <option value={10}>10</option>
             <option value={15}>15</option>
             <option value={20}>20</option>
           </select>

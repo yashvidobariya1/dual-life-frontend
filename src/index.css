@@ -75,9 +75,10 @@ code {
   background-color: #007bff;
   border: none;
   color: #fff;
-  padding: 6px 14px;
+  padding: 3px 6px;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 12px;
   transition: background 0.2s ease-in-out;
 }
 
@@ -120,4 +121,10 @@ code {
   color: red;
   font-size: 12px;
   margin: 2px 0px 10px 6px;
+}
+
+@media (max-width: 600px) {
+  .pagination button {
+    flex-direction: column;
+  }
 }

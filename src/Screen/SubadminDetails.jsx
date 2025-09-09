@@ -3,14 +3,19 @@ import "./SubadminDetials.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { PostCall } from "./ApiService";
 import Loader from "../Main/Loader";
+import { showToast } from "../Main/ToastManager"; // optional if you use toast
 
 const SubadminDetials = () => {
   const { id } = useParams();
-  const [SubadminDetials, setSubadminDetials] = useState([]);
+  const [subadminDetails, setSubadminDetials] = useState({});
   const [recordhealthDetials, setrecordhealthDetials] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [assignkit, setassignkit] = useState(false);
+  const [formdata, setFormdata] = useState({ kitsToAssign: "" });
+
   const navigate = useNavigate();
 
+  // fetch details
   useEffect(() => {
     const fetchPatientDetails = async () => {
       try {
@@ -20,16 +25,14 @@ const SubadminDetials = () => {
           const subAdmin = response?.subAdmin?.subAdmin || {};
           const dob = response?.subAdmin?.dob || null;
 
-          // merge everything you want in one object
           setSubadminDetials({
             ...subAdmin,
-            dob, // take dob from parent
+            dob,
             performance: subAdmin.performance || {},
             KitInventory: subAdmin.KitInventory || {},
             kitsAssigned: subAdmin.kitsAssigned || 0,
             kitUsageHistory: subAdmin.kitUsageHistory || [],
             patientHistory: subAdmin.patientHistory || [],
-            kitUsageHistory: subAdmin.kitUsageHistory || [],
           });
 
           setrecordhealthDetials(
@@ -48,9 +51,51 @@ const SubadminDetials = () => {
     fetchPatientDetails();
   }, [id]);
 
-  if (loading) {
-    return <Loader />;
-  }
+  if (loading) return <Loader />;
+
+  // handle input open
+  const handleinputopen = () => {
+    setassignkit(true);
+  };
+
+  // handle change for input
+  const handleChange = (e) => {
+    setFormdata({ ...formdata, [e.target.name]: e.target.value });
+  };
+
+  // assign kits API call
+  const handleassignkit = async () => {
+    if (!formdata.kitsToAssign || Number(formdata.kitsToAssign) <= 0) {
+      showToast("Enter valid number of kits", "error");
+      return;
+    }
+    const payload = {
+      subAdminId: id,
+      kitsToAssign: Number(formdata.kitsToAssign),
+    };
+
+    try {
+      setLoading(true);
+      const response = await PostCall(`admin/assignKitsToSubAdmin`, payload);
+      if (response?.success) {
+        showToast("Kits assigned successfully", "success");
+        setassignkit(false);
+        setFormdata({ kitsToAssign: "" });
+        const refreshed = await PostCall(`admin/GetSubAdminById/${id}`);
+        if (refreshed?.success) {
+          setSubadminDetials(refreshed?.subAdmin?.subAdmin || {});
+          setassignkit(false);
+        }
+      } else {
+        showToast(response?.message || "Failed to assign kits", "error");
+      }
+    } catch (error) {
+      console.error("Error assigning kits:", error);
+      showToast("Something went wrong", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div id="test-details-view" className="test-details-container">
@@ -62,106 +107,76 @@ const SubadminDetials = () => {
       </div>
 
       <div className="card-testdetails">
-        {/* Aadhaar Info */}
         <div className="card-header">Aadhaar Information</div>
         <div className="card-body">
           <div className="grid two-cols">
             <div>
               <div className="user-info-subadmin">
-                {/* <img
-                  className="user-avatar"
-                  src={
-                    SubadminDetials?.photo
-                      ? `data:image/jpeg;base64,${SubadminDetials.photo}`
-                      : "https://via.placeholder.com/150"
-                  }
-                  alt="User"
-                /> */}
                 <div>
-                  <h4 className="user-name">{SubadminDetials?.name}</h4>
+                  <h4 className="user-name">{subadminDetails?.name}</h4>
                   <p className="user-aadhaar">
                     Aadhaar:{" "}
                     <span className="aadhaar-mask">
-                      XXXX-XXXX-{SubadminDetials?.aadhaarNumber?.slice(-4)}
+                      XXXX-XXXX-{subadminDetails?.aadhaarNumber?.slice(-4)}
                     </span>
                   </p>
-                  <p className="user-phone">Phone: {SubadminDetials.phone}</p>
-                  <p className="user-phone">Email: {SubadminDetials.email}</p>
+                  <p className="user-phone">Phone: {subadminDetails.phone}</p>
+                  <p className="user-phone">Email: {subadminDetails.email}</p>
                   <p className="user-phone">
-                    sub-Admin Id: {SubadminDetials.subAdminId}
+                    Sub-Admin Id: {subadminDetails.subAdminId}
                   </p>
-                  <p className="user-phone">Email: {SubadminDetials.email}</p>
                   <p className="user-phone">
                     Date of Birth:{" "}
-                    {new Date(SubadminDetials?.dob).toLocaleDateString()}
+                    {new Date(subadminDetails?.dob).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="subadmin-details">
                   <div className="address">
+                    <span className="label-subadmin">Performance</span>
                     <p>
-                      <span className="label-subadmin">performance</span>{" "}
-                      <p>
-                        Total Tests: {SubadminDetials?.performance?.totalTests}
-                      </p>
-                      <p>Kits Assigned: {SubadminDetials?.successfulTests}</p>
-                      <p>
-                        Kit Used: {SubadminDetials?.KitInventory?.failedTests}
-                      </p>
+                      Total Tests: {subadminDetails?.performance?.totalTests}
                     </p>
+                    <p>
+                      Kits Assigned:{" "}
+                      {subadminDetails?.performance?.successfulTests}
+                    </p>
+                    <p>Kit Used: {subadminDetails?.performance?.failedTests}</p>
                   </div>
                   <div className="address">
+                    <span className="label-subadmin">Kit Inventory</span>
+                    <p>Kit Used: {subadminDetails?.KitInventory?.kitUsed}</p>
                     <p>
-                      <span className="label-subadmin">Kit Inventory</span>{" "}
-                      <p>
-                        Total Tests: {SubadminDetials?.KitInventory?.kitUsed}
-                      </p>
-                      <p>Kits Assigned: {SubadminDetials?.kitUsed}</p>
-                      <p>
-                        Kit Used:{" "}
-                        {SubadminDetials?.KitInventory?.lifetimekitUsed}
-                      </p>
+                      Kit Available:{" "}
+                      {subadminDetails?.KitInventory?.kitAvailable}
                     </p>
+                    <p>
+                      Lifetime Kit Used:{" "}
+                      {subadminDetails?.KitInventory?.lifetimekitUsed}
+                    </p>
+                    <button onClick={handleinputopen} className="assign-kit">
+                      Assign kits
+                    </button>
+                    <div className="assignkit-div">
+                      {assignkit && (
+                        <>
+                          <input
+                            type="number"
+                            name="kitsToAssign"
+                            value={formdata.kitsToAssign}
+                            onChange={handleChange}
+                            placeholder="Enter kits to assign"
+                          />
+                          <button onClick={handleassignkit}>Submit</button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* <div className="doc-box">
-              <h4 className="doc-title">Uploaded Documents</h4>
-              <div className="doc-grid">
-                {SubadminDetials?.reports?.length > 0 ? (
-                  SubadminDetials?.reports?.map((report, reportIndex) =>
-                    report?.testImages?.length > 0 ? (
-                      report.testImages.map((img, imgIndex) => (
-                        <div
-                          className="doc-item"
-                          key={`${reportIndex}-${imgIndex}`}
-                        >
-                          <img
-                            src={`data:image/jpeg;base64,${img.imageData}`}
-                            alt={img.imageType || `Document ${imgIndex + 1}`}
-                          />
-                          <p>{img.imageType || `Document ${imgIndex + 1}`}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <p key={reportIndex}>
-                        No documents uploaded for this report
-                      </p>
-                    )
-                  )
-                ) : (
-                  <p>No reports available</p>
-                )}
-              </div>
-            </div> */}
           </div>
-          <div className="card-header test-data">Test Data</div>
+          {/* <div className="card-header test-data">Test Data</div> */}
           <div className="card-body"></div>
-        </div>
-
-        <div className="card-footer">
-          <p className="submitted">Submitted by: {SubadminDetials.name}</p>
         </div>
       </div>
     </div>
