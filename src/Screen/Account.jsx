@@ -1,9 +1,53 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { GetCall, PostCall } from "../Screen/ApiService";
 import "./Account.css";
 
 const Account = () => {
-  const profile = useSelector((state) => state.auth.userInfo);
+  const [profile, setProfile] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({});
+
+  // Fetch profile on load
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await GetCall("auth/me");
+        if (response?.success) {
+          setProfile(response.data);
+          setFormData(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await PostCall("auth/update-profile", formData);
+      if (response?.success) {
+        setProfile(formData);
+        setEditMode(false);
+        alert("Profile updated successfully!");
+      } else {
+        alert("Update failed!");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
+  const handleCancel = () => {
+    setFormData(profile);
+    setEditMode(false);
+  };
+
+  if (!profile) return <p>Loading...</p>;
 
   return (
     <div className="account-card">
@@ -24,6 +68,26 @@ const Account = () => {
 
         {/* Info */}
         <div className="account-info">
+          <label>
+            Name:
+            <input
+              type="text"
+              name="name"
+              value={formData.name || ""}
+              disabled={!editMode}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Email:
+            <input
+              type="email"
+              name="email"
+              value={formData.email || ""}
+              disabled={!editMode}
+              onChange={handleChange}
+            />
+          </label>
           <p>
             <span>User ID:</span> {profile.userId}
           </p>
@@ -35,6 +99,18 @@ const Account = () => {
               {profile.isActive ? "Active" : "Inactive"}
             </span>
           </p>
+        </div>
+
+        {/* Action buttons */}
+        <div className="account-actions">
+          {!editMode ? (
+            <button onClick={() => setEditMode(true)}>Edit</button>
+          ) : (
+            <>
+              <button onClick={handleSave}>Save</button>
+              <button onClick={handleCancel}>Cancel</button>
+            </>
+          )}
         </div>
       </div>
     </div>

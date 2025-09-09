@@ -88,11 +88,10 @@ const Login = () => {
         );
         Navigate("/dashboard");
       }
-    } catch (err) {
-      console.error("API Error:", err);
-      showToast("Login failed. Please try again.", "error");
+    } catch (error) {
+      showToast(error, "error");
     } finally {
-      setLoading(false); // <-- stop loading
+      setLoading(false);
     }
   };
 

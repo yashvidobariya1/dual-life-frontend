@@ -229,6 +229,7 @@ const SubAdmin = () => {
           email: subAdminData.email || "",
           mobileNumber: subAdminData.phone || "",
           password: subAdminData.password || "",
+          kycDataId: subAdminData.kycDataId || "",
           // confirmPassword: subAdminData.password || "",
           dob: dob ? dob.split("T")[0] : "",
         });
@@ -266,7 +267,7 @@ const SubAdmin = () => {
       phone: formData.mobileNumber,
       password: formData.password,
       dob: formData.dob,
-      kycData: verifyResponse._id,
+      kycDataId: verifyResponse._id,
     };
 
     try {
