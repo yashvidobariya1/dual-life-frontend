@@ -1,23 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { GetCall, PostCall } from "../Screen/ApiService";
+import { GetCall, PostCall, PutCall } from "../Screen/ApiService";
+import Loader from "../Main/Loader"; // make sure this exists
 import "./Account.css";
+import { showToast } from "../Main/ToastManager";
 
 const Account = () => {
   const [profile, setProfile] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false);
 
   // Fetch profile on load
   useEffect(() => {
     const fetchProfile = async () => {
+      setLoading(true);
       try {
         const response = await GetCall("auth/me");
         if (response?.success) {
-          setProfile(response.data);
-          setFormData(response.data);
+          setProfile(response.user); // ✅ fixed (response.user not response.data)
+          setFormData(response.user);
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchProfile();
@@ -28,17 +34,21 @@ const Account = () => {
   };
 
   const handleSave = async () => {
+    setLoading(true);
+
     try {
-      const response = await PostCall("auth/update-profile", formData);
+      const response = await PutCall("auth/update-profile", formData);
       if (response?.success) {
         setProfile(formData);
         setEditMode(false);
-        alert("Profile updated successfully!");
+        showToast(response?.message, "success");
       } else {
-        alert("Update failed!");
+        showToast("Update failed!", "error");
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error(error.message, error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,7 +57,13 @@ const Account = () => {
     setEditMode(false);
   };
 
-  if (!profile) return <p>Loading...</p>;
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (!profile) {
+    return <p>No profile data found.</p>;
+  }
 
   return (
     <div className="account-card">
@@ -66,7 +82,7 @@ const Account = () => {
           </div>
         </div>
 
-        {/* Info */}
+        {/* Info Section */}
         <div className="account-info">
           <label>
             Name:
@@ -74,7 +90,7 @@ const Account = () => {
               type="text"
               name="name"
               value={formData.name || ""}
-              disabled={!editMode}
+              disabled
               onChange={handleChange}
             />
           </label>
@@ -88,8 +104,32 @@ const Account = () => {
               onChange={handleChange}
             />
           </label>
+          <label>
+            Phone:
+            <input
+              type="text"
+              name="phone"
+              value={formData.phone || ""}
+              disabled={!editMode}
+              onChange={handleChange}
+            />
+          </label>
+          <label>
+            Aadhaar:
+            <input
+              type="text"
+              name="aadhaarNumber"
+              value={formData.aadhaarNumber || ""}
+              disabled
+              onChange={handleChange}
+            />
+          </label>
+
           <p>
             <span>User ID:</span> {profile.userId}
+          </p>
+          <p>
+            <span>Role:</span> {profile.role}
           </p>
           <p>
             <span>Status:</span>{" "}
@@ -99,6 +139,23 @@ const Account = () => {
               {profile.isActive ? "Active" : "Inactive"}
             </span>
           </p>
+
+          <div className="kits-info">
+            <h3>Kits Information</h3>
+            <p>Kits Available: {profile.kitInventory?.kitsAvailable}</p>
+            <p>Kits Used: {profile.kitInventory?.kitsUsed}</p>
+            <p>
+              Lifetime Kits Assigned:{" "}
+              {profile.kitInventory?.lifetimeKitsAssigned}
+            </p>
+          </div>
+
+          <p>
+            <span>Last Login:</span>{" "}
+            {profile.lastLogin
+              ? new Date(profile.lastLogin).toLocaleString()
+              : "Never"}
+          </p>
         </div>
 
         {/* Action buttons */}
@@ -107,8 +164,12 @@ const Account = () => {
             <button onClick={() => setEditMode(true)}>Edit</button>
           ) : (
             <>
-              <button onClick={handleSave}>Save</button>
-              <button onClick={handleCancel}>Cancel</button>
+              <button onClick={handleSave} disabled={loading}>
+                {loading ? "Saving..." : "Save"}
+              </button>
+              <button onClick={handleCancel} disabled={loading}>
+                Cancel
+              </button>
             </>
           )}
         </div>

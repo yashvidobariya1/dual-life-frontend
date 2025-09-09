@@ -33,10 +33,32 @@
   margin: 0px;
 }
 
+.account-info label,
+.account-info p {
+  display: flex;
+  gap: 30px;
+  width: 70%;
+  margin: 8px 0;
+  text-align: left;
+  justify-content: space-between;
+}
+
 .account-info {
   /* margin-top: 1rem; */
   width: 100%;
   text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.account-info input {
+  padding: 4px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.account-info p {
+  margin: 6px 0;
 }
 
 .account-info span {
@@ -60,4 +82,31 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+}
+
+.account-actions {
+  display: flex;
+  gap: 15px;
+  margin: 15px 0px;
+}
+
+.account-actions button {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* First button (Edit/Save) */
+.account-actions button:first-child {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+/* Second button (Cancel) */
+.account-actions button:last-child {
+  background-color: var(--gray-light);
+  color: var(--black-color);
 }

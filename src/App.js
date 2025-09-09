@@ -18,6 +18,7 @@ import PublicRoute from "./Main/PublicRoute";
 import ToastManager from "./Main/ToastManager";
 import Account from "./Screen/Account";
 import ChangePassword from "./Screen/ChangePassword";
+import SubadminDetials from "./Screen/SubadminDetails";
 
 function Layout({
   children,
@@ -179,9 +180,17 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/sub-admins/sub-adminsdetails/:id"
+            element={
+              <ProtectedRoute>
+                <SubadminDetials />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Layout>
-    </BrowserRouter>
+    </BrowserRouter >
   );
 }
 

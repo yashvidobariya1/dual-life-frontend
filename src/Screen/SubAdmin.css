@@ -1,5 +1,5 @@
 .subadmin-container {
-  padding: 25px;
+  padding: 20px;
 }
 
 .header {
@@ -173,7 +173,8 @@
 .modal input {
   width: calc(100% - 30px);
   margin: 4px 0px 10px 0px;
-  padding: 10px 15px;
+  padding: 7px 15px;
+  border-radius: 4px;
 }
 
 .modal-form label {

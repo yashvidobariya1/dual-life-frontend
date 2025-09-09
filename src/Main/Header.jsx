@@ -22,6 +22,7 @@ const Header = ({ toggleSidebar }) => {
     "/test-records/recorddetails/:id": "Test Records / Record Details",
     "/reports": "Reports",
     "/reports/reportdetails/:id": "Reports / Report Details",
+    "/sub-admins/sub-adminsdetails/:id": "Sub Admins / Sub Admins Details",
     "/account": "Account",
   };
 
@@ -31,6 +32,9 @@ const Header = ({ toggleSidebar }) => {
     }
     if (pathname.startsWith("/reports/reportdetails/")) {
       return "Reports / Report Details";
+    }
+    if (pathname.startsWith("/sub-admins/sub-adminsdetails/")) {
+      return "Sub Admins / Sub Admins Details";
     }
     return routeTitles[pathname] || "Unknown";
   };

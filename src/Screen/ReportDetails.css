@@ -1,5 +1,5 @@
 .test-details-container {
-  padding: 25px;
+  padding: 20px;
 }
 
 .header {
@@ -156,10 +156,10 @@
 
 .field input {
   width: calc(100% - 20px);
-  padding: 6px 10px;
+  padding: 7px 15px;
+  border-radius: 4px;
   font-size: 14px;
   border: 1px solid #d1d5db;
-  border-radius: 6px;
   background: var(--white);
 }
 

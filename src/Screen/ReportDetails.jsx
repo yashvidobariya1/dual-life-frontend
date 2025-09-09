@@ -85,21 +85,30 @@ const ReportDetails = () => {
             <div className="doc-box">
               <h4 className="doc-title">Uploaded Documents</h4>
               <div className="doc-grid">
-                {/* Replace with dynamic URLs if API provides */}
-                <div className="doc-item">
-                  <img
-                    src="https://via.placeholder.com/150"
-                    alt="Aadhaar Front"
-                  />
-                  <p>Aadhaar Front</p>
-                </div>
-                <div className="doc-item">
-                  <img
-                    src="https://via.placeholder.com/150"
-                    alt="Aadhaar Back"
-                  />
-                  <p>Aadhaar Back</p>
-                </div>
+                {ReportDetails?.reports?.length > 0 ? (
+                  ReportDetails.reports.map((report, reportIndex) =>
+                    report?.testImages?.length > 0 ? (
+                      report.testImages.map((img, imgIndex) => (
+                        <div
+                          className="doc-item"
+                          key={`${reportIndex}-${imgIndex}`}
+                        >
+                          <img
+                            src={`data:image/jpeg;base64,${img.imageData}`}
+                            alt={img.imageType || `Document ${imgIndex + 1}`}
+                          />
+                          <p>{img.imageType || `Document ${imgIndex + 1}`}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p key={reportIndex}>
+                        No documents uploaded for this report
+                      </p>
+                    )
+                  )
+                ) : (
+                  <p>No reports available</p>
+                )}
               </div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 .dashboard {
-  padding: 30px;
+  padding: 20px;
   font-family: Arial, sans-serif;
 }
 
@@ -200,10 +200,10 @@
 
 .popup input {
   width: calc(100% - 16px);
-  padding: 8px;
+  padding: 7px 15px;
+  border-radius: 4px;
   margin: 12px 0;
   border: 1px solid var(--gray-light);
-  border-radius: 8px;
 }
 
 .popup-close {

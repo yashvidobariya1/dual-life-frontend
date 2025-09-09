@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import "./RecordDetails.css";
+import "./SubadminDetials.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { PostCall } from "./ApiService";
 import Loader from "../Main/Loader";
 
-const RecordDetails = () => {
+const SubadminDetials = () => {
   const { id } = useParams();
-  const [recordDetails, setRecordDetails] = useState([]);
+  const [SubadminDetials, setSubadminDetials] = useState([]);
   const [recordhealthDetials, setrecordhealthDetials] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const RecordDetails = () => {
         setLoading(true);
         const response = await PostCall(`admin/getPatientById/${id}`);
         if (response?.success) {
-          setRecordDetails(response?.patient);
+          setSubadminDetials(response?.patient);
           setrecordhealthDetials(
             response?.patient?.reports?.[0]?.healthResults || {}
           );
@@ -41,7 +41,7 @@ const RecordDetails = () => {
   return (
     <div id="test-details-view" className="test-details-container">
       <div className="header">
-        <h2 className="title">Test Record Details</h2>
+        <h2 className="title">Sub Admin Details</h2>
         <button className="btn btn-back" onClick={() => navigate(-1)}>
           Back to List
         </button>
@@ -57,27 +57,27 @@ const RecordDetails = () => {
                 <img
                   className="user-avatar"
                   src={
-                    recordDetails.photo
-                      ? `data:image/jpeg;base64,${recordDetails.photo}`
+                    SubadminDetials.photo
+                      ? `data:image/jpeg;base64,${SubadminDetials.photo}`
                       : "https://via.placeholder.com/150"
                   }
                   alt="User"
                 />
                 <div>
-                  <h4 className="user-name">{recordDetails.name}</h4>
+                  <h4 className="user-name">{SubadminDetials.name}</h4>
                   <p className="user-aadhaar">
                     Aadhaar:{" "}
                     <span className="aadhaar-mask">
-                      XXXX-XXXX-{recordDetails.aadhaarNumber?.slice(-4)}
+                      XXXX-XXXX-{SubadminDetials.aadhaarNumber?.slice(-4)}
                     </span>
                   </p>
-                  <p className="user-phone">Phone: {recordDetails.phone}</p>
+                  <p className="user-phone">Phone: {SubadminDetials.phone}</p>
                 </div>
               </div>
               <div className="address">
                 <p>
                   <span className="label">Address:</span>{" "}
-                  {recordDetails.address}
+                  {SubadminDetials.address}
                 </p>
               </div>
             </div>
@@ -85,8 +85,8 @@ const RecordDetails = () => {
             <div className="doc-box">
               <h4 className="doc-title">Uploaded Documents</h4>
               <div className="doc-grid">
-                {recordDetails?.reports?.length > 0 ? (
-                  recordDetails.reports.map((report, reportIndex) =>
+                {SubadminDetials?.reports?.length > 0 ? (
+                  SubadminDetials.reports.map((report, reportIndex) =>
                     report?.testImages?.length > 0 ? (
                       report.testImages.map((img, imgIndex) => (
                         <div
@@ -170,11 +170,11 @@ const RecordDetails = () => {
 
         {/* Footer */}
         <div className="card-footer">
-          <p className="submitted">Submitted by: {recordDetails.name}</p>
+          <p className="submitted">Submitted by: {SubadminDetials.name}</p>
         </div>
       </div>
     </div>
   );
 };
 
-export default RecordDetails;
+export default SubadminDetials;

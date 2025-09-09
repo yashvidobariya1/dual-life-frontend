@@ -89,7 +89,7 @@ const Login = () => {
         Navigate("/dashboard");
       }
     } catch (error) {
-      showToast(error, "error");
+      showToast(error?.message, "error");
     } finally {
       setLoading(false);
     }

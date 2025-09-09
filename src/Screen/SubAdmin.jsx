@@ -8,6 +8,7 @@ import { showToast } from "../Main/ToastManager";
 import Loader from "../Main/Loader";
 import { FaSearch } from "react-icons/fa";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const SubAdmin = () => {
   const [step, setStep] = useState(0);
@@ -25,7 +26,7 @@ const SubAdmin = () => {
   const [searchQuery, setsearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
 
-  // edit mode states
+  const navigate = useNavigate();
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -355,6 +356,10 @@ const SubAdmin = () => {
     return <Loader />;
   }
 
+  const handleDetails = (id) => {
+    navigate(`/sub-admins/sub-adminsdetails/${id}`);
+  };
+
   return (
     <div id="subadmin-view" className="subadmin-container">
       <div className="header">
@@ -426,10 +431,15 @@ const SubAdmin = () => {
                 <p className="phone">
                   <IoCallOutline /> {admin.phone}
                 </p>
-                <p className="stats">
-                  <FaCheck /> Total Tests: {admin.tests} | Success Rate:{" "}
-                  {admin.success}
-                </p>
+              </div>
+
+              <div className="record-footer">
+                <button
+                  className="view-btn"
+                  onClick={() => handleDetails(admin._id)}
+                >
+                  View Details
+                </button>
               </div>
             </div>
           ))
