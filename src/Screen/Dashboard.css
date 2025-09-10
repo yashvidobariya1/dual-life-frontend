@@ -254,6 +254,23 @@
   margin: 4px 0;
 }
 
+.records-flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.records-all {
+  height: max-content;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
 @media (max-width: 768px) {
   .info .label {
     font-size: 14px;

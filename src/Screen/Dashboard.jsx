@@ -11,12 +11,13 @@ import { GetCall, PostCall } from "./ApiService";
 import moment from "moment";
 import Loader from "../Main/Loader";
 import { showToast } from "../Main/ToastManager";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [recentRecords, setRecentRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
-
+  const navigate = useNavigate();
   const [showPopup, setShowPopup] = useState(false);
   const [quantity, setQuantity] = useState("");
 
@@ -107,7 +108,7 @@ const Dashboard = () => {
           value: dashboardData.adminKitsAvailable,
           color: "orange",
           icon: <FaChartSimple />,
-          clickable: true, // mark popup trigger
+          clickable: true,
         },
         {
           label: "Total Kits Available",
@@ -124,11 +125,13 @@ const Dashboard = () => {
       subtitle: "Register new sub-admin",
       color: "blue",
       icon: <RiAdminFill />,
+      navigate: "/sub-admins",
     },
     {
       title: "View All Test Records",
       subtitle: "Browse all test results",
       color: "green",
+      navigate: "/reports",
       icon: <FaUserClock />,
     },
     {
@@ -136,8 +139,17 @@ const Dashboard = () => {
       subtitle: "Generate daily summary",
       color: "purple",
       icon: <TbFileReport />,
+      navigate: "/reports",
     },
   ];
+
+  const handleViewAll = () => {
+    navigate("/reports");
+  };
+
+  const handleDetails = (id) => {
+    navigate(`/reports/reportdetails/${id}`);
+  };
 
   return (
     <div className="dashboard">
@@ -198,7 +210,16 @@ const Dashboard = () => {
               <div className={`quick-icon ${action.color}`}>{action.icon}</div>
               <div className="dashboard-content">
                 <p className="title-dashboard">{action.title}</p>
-                <p className="subtitle">{action.subtitle}</p>
+                <p
+                  className="subtitle"
+                  onClick={(e) => {
+                    e.stopPropagation(); // prevent button click bubbling
+                    navigate(action.navigate); // go to the route
+                  }}
+                  style={{ cursor: "pointer" }} // optional styling
+                >
+                  {action.subtitle}
+                </p>
               </div>
             </button>
           ))}
@@ -206,7 +227,12 @@ const Dashboard = () => {
       </div>
 
       <div className="recent-records">
-        <h2>Recent Test Records</h2>
+        <div className="records-flex">
+          <h2>Recent Test Records</h2>
+          <button className="records-all" onClick={handleViewAll}>
+            View All
+          </button>
+        </div>
         {recentRecords?.map((rec, index) => (
           <div key={index} className="record">
             <div className="record-header">
@@ -224,6 +250,14 @@ const Dashboard = () => {
                   ? moment(rec.registeredAt).format("DD/MM/YYYY")
                   : "N/A"}
               </span>
+            </div>
+            <div className="record-footer">
+              <button
+                className="view-btn"
+                onClick={() => handleDetails(rec._id)}
+              >
+                View Details
+              </button>
             </div>
           </div>
         ))}

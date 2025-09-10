@@ -71,7 +71,7 @@ const Sidebar = ({ collapsed, mobileOpen, closeSidebar }) => {
           </NavLink>
         </li>
 
-        <li>
+        {/* <li>
           <NavLink
             to="/test-records"
             className={({ isActive }) => (isActive ? "active" : "")}
@@ -83,7 +83,7 @@ const Sidebar = ({ collapsed, mobileOpen, closeSidebar }) => {
               <p>Test Records</p>
             </div>
           </NavLink>
-        </li>
+        </li> */}
 
         <li>
           <NavLink

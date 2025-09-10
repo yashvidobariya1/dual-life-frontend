@@ -132,14 +132,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/test-records/recorddetails/:id"
             element={
               <ProtectedRoute>
                 <RecordDetails />
               </ProtectedRoute>
             }
-          />
+          /> */}
           <Route
             path="/reports"
             element={
