@@ -80,7 +80,7 @@ const Report = () => {
   return (
     <div id="test-records-view" className="test-records">
       <div className="header">
-        <h2>Test Record Management</h2>
+        <h2>Report Management</h2>
         <div className="actions">
           <div className="search-box">
             <input
